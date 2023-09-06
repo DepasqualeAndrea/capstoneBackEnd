@@ -1,10 +1,30 @@
 package BackEnd.CapstoneProject.Security;
+
+import java.io.IOException;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import BackEnd.CapstoneProject.Exception.UnauthorizedException;
+import BackEnd.CapstoneProject.User.User;
+import BackEnd.CapstoneProject.User.UserService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 @Component
-public class JWTFilter {
+public class JWTFilter extends OncePerRequestFilter {
+
 	@Autowired
 	JWTTools jTools;
 	@Autowired
-	UtenteService utenteService;
+	UserService utenteService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -17,7 +37,7 @@ public class JWTFilter {
 
 		jTools.verificaToken(token);
 		String id = jTools.extractSubject(token);
-		Utente utenteCorrente = utenteService.findById(UUID.fromString(id));
+		User utenteCorrente = utenteService.findById(UUID.fromString(id));
 
 		UsernamePasswordAuthenticationToken autorizzationToken = new UsernamePasswordAuthenticationToken(utenteCorrente,
 				null, utenteCorrente.getAuthorities());
@@ -33,4 +53,5 @@ public class JWTFilter {
 		System.out.println(request.getServletPath());
 		return new AntPathMatcher().match("/auth/**", request.getServletPath());
 	}
+
 }

@@ -8,5 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class UserLoginPayload {
-	String accessToken;
+	String username;
+	String email;
+	String password;
 }
