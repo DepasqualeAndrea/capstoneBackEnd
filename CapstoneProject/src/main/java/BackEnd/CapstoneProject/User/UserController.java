@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import BackEnd.CapstoneProject.Payload.UserRequestPayload;
 
 @RestController
-@RequestMapping("/utenti")
+@RequestMapping("/user")
 public class UserController {
 	private final UserService utenteService;
 
@@ -31,10 +30,11 @@ public class UserController {
 	}
 
 	@GetMapping
-	public Page<User> getUtenti(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "userId") String sortBy) {
+	public Page<User> getUtenti(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+			@RequestParam(defaultValue = "userId") String sortBy) {
 		return utenteService.find(page, size, sortBy);
 	}
+
 	@GetMapping("/{userId}")
 	public User findUtentiById(@PathVariable UUID userId) {
 		return utenteService.findById(userId);
@@ -42,21 +42,22 @@ public class UserController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasAuthority('ADMIN')")
+	// @PreAuthorize("hasAuthority('ADMIN')")
 	@ResponseStatus(HttpStatus.CREATED)
+
 	public User saveCliente(@RequestBody UserRequestPayload body) {
 		User created = utenteService.creaUtente(body);
 		return created;
 	}
 
 	@PutMapping("/{userId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
+	// @PreAuthorize("hasAuthority('ADMIN')")
 	public User updateUtenti(@PathVariable UUID userId, @RequestBody UserRequestPayload body) {
 		return utenteService.findByIdAndUpdate(userId, body);
 	}
 
 	@DeleteMapping("/{userId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
+	// @PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<String> deleteUtente(@PathVariable UUID userId) {
 		utenteService.findByIdAndDelete(userId);
 		return ResponseEntity.ok("Utente eliminato con successo.");

@@ -16,12 +16,12 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "Utente")
 @Data
@@ -31,12 +31,13 @@ import lombok.ToString;
 public class User implements UserDetails {
 	@Id
 	@GeneratedValue
+	@PrimaryKeyJoinColumn
 	private UUID userId;
+	private String nome;
+	private String cognome;
 	private String username;
 	@Column(nullable = true, unique = true)
 	private String email;
-	private String nome;
-	private String cognome;
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
@@ -54,7 +55,6 @@ public class User implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(role.name()));
 	}
-
 
 	@Override
 	public String getUsername() {
