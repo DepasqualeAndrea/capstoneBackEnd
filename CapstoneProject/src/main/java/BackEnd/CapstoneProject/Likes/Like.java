@@ -1,4 +1,4 @@
-package BackEnd.CapstoneProject.comments;
+package BackEnd.CapstoneProject.Likes;
 
 import java.util.Date;
 import java.util.UUID;
@@ -11,25 +11,27 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
-@Table(name = "Commenti")
+@Table(name = "Like")
 @Data
 @NoArgsConstructor
-@ToString
-public class Comment {
+@AllArgsConstructor
+public class Like {
 	@Id
 	@GeneratedValue
-	private UUID commentId;
-	private String content;
-	private Date timestamp;
+	private UUID likeId;
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private User userId;
+
+	private Date timestamp;
+
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Post postId;
 
+	private Integer target_type;
 }

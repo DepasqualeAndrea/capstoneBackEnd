@@ -1,6 +1,6 @@
 package BackEnd.CapstoneProject.Post;
 
-import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,10 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
-	ArrayList<Post> findAll();
+	Optional<Post> findById(UUID postid);
 
-	@SuppressWarnings("unchecked")
-	Post save(Post post);
+	Optional<Post> findByDescription(String description);
 
-	void deleteById(UUID postID);
 }

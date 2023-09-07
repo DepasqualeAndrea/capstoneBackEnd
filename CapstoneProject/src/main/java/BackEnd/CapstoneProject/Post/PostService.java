@@ -1,42 +1,57 @@
 package BackEnd.CapstoneProject.Post;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import BackEnd.CapstoneProject.Exception.BadRequestException;
+import BackEnd.CapstoneProject.Exception.NotFoundException;
+import BackEnd.CapstoneProject.User.UserService;
 
 @Service
 public class PostService {
+	private final PostRepository postRepo;
+	private final UserService userService;
+
 	@Autowired
-	PostRepository postRepo;
-
-	public ArrayList<Post> submitPostToDB(Post postData) {
-
-		Date date = new Date();
-		long time = date.getTime();
-		Timestamp dateTime = new Timestamp(time);
-
-		postData.setPostID(UUID.randomUUID());
-		postData.setLikes(0);
-		postData.setTimeStamp(dateTime);
-
-		postRepo.save(postData);
-		ArrayList<Post> result = retrivePostFromDB();
-		return result;
+	public PostService(PostRepository postRepo, UserService userService) {
+		this.postRepo = postRepo;
+		this.userService = userService;
 	}
 
-	public ArrayList<Post> retrivePostFromDB() {
-		ArrayList<Post> result = postRepo.findAll();
-		return result;
+	public Post creaPost(PostPayload body) {
+		postRepo.findByDescription(body.getDescription()).ifPresent(u -> {
+			throw new BadRequestException("Il post é gia Esistente!");
+		});
+
+		Post newPost = new Post(LocalDate.now(), body.getDescription(), body.getImageUrl());
+		return postRepo.save(newPost);
 	}
 
-	public ArrayList<Post> deletePostFromDB(UUID postID) {
-		postRepo.deleteById(postID);
+	public Page<Post> find(int page, int size, String sort) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
 
-		ArrayList<Post> result = retrivePostFromDB();
-		return result;
+		return postRepo.findAll(pageable);
 	}
+
+	public Post findById(UUID id) throws NotFoundException {
+		return postRepo.findById(id).orElseThrow(() -> new NotFoundException(id));
+	}
+
+	public Post findByIdAndUpdate(UUID id, PostPayload body) throws NotFoundException {
+		Post found = this.findById(id);
+		return postRepo.save(found);
+	}
+
+	public void findByIdAndDelete(UUID id) throws NotFoundException {
+		Post found = this.findById(id);
+		postRepo.delete(found);
+	}
+
 }

@@ -1,5 +1,6 @@
 package BackEnd.CapstoneProject.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -10,12 +11,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import BackEnd.CapstoneProject.Post.Post;
+import BackEnd.CapstoneProject.comments.Comment;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -23,7 +28,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "Utente")
+@Table(name = "Utenti")
 @Data
 @NoArgsConstructor
 @ToString
@@ -31,7 +36,6 @@ import lombok.ToString;
 public class User implements UserDetails {
 	@Id
 	@GeneratedValue
-	@PrimaryKeyJoinColumn
 	private UUID userId;
 	private String nome;
 	private String cognome;
@@ -41,6 +45,11 @@ public class User implements UserDetails {
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
+
+	@OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+	private List<Post> post = new ArrayList<>();
+	@OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+	private List<Comment> comment = new ArrayList<>();
 
 	public User(String nome, String cognome, String username, String email, String password, Ruolo role) {
 		this.nome = nome;
