@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/user/postService")
+@RequestMapping("/user/post")
 public class PostController {
 	@Autowired
 	PostService postService;
