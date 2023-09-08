@@ -21,15 +21,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Table(name = "Utenti")
 @Data
+@Getter
+@Setter
 @NoArgsConstructor
 @ToString
 @JsonIgnoreProperties({ "password", "accountNonExpired", "authorities", "credentialsNonExpired", "accountNonLocked" })
@@ -46,7 +49,7 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
 
-	@OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+	@OneToMany
 	private List<Post> post = new ArrayList<>();
 	@OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
 	private List<Comment> comment = new ArrayList<>();

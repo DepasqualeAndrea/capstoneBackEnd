@@ -1,5 +1,6 @@
 package BackEnd.CapstoneProject.User;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import BackEnd.CapstoneProject.Exception.BadRequestException;
@@ -51,6 +54,11 @@ public class UserService {
 		return utenteRepo.save(found);
 	}
 
+	public User getUserById(UUID userId) {
+		return utenteRepo.findById(userId)
+				.orElseThrow(() -> new NotFoundException("Utente con id " + userId + " non trovato"));
+	}
+
 	public void findByIdAndDelete(UUID id) throws NotFoundException {
 		User found = this.findById(id);
 		utenteRepo.delete(found);
@@ -65,4 +73,33 @@ public class UserService {
 		return utenteRepo.findByUsername(username)
 				.orElseThrow(() -> new NotFoundException("Username" + username + "non corrispondente"));
 	}
+
+	public User getCurrentUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = authentication.getPrincipal();
+
+		if (principal instanceof User) {
+			User user = (User) principal;
+			String currentUserName = user.getNome();
+			Optional<User> userOptional = utenteRepo.findByNome(currentUserName);
+
+			if (userOptional.isPresent()) {
+				return userOptional.get();
+			}
+		}
+
+		throw new NotFoundException("Utente non trovato");
+	}
+
+//	public User getCurrentUser() {
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		String userName = authentication.getName();
+//		Optional<User> user = utenteRepo.findByNome(userName);
+//
+//		if (user.isPresent()) {
+//			return user.get();
+//		} else {
+//			throw new NotFoundException("Utente con nome " + userName + " non trovato");
+//		}
+//	}
 }

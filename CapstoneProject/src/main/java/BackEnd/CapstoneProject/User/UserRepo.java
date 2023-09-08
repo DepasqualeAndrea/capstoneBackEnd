@@ -5,9 +5,12 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 @Repository
-public interface UserRepo  extends JpaRepository<User, UUID> {
+public interface UserRepo extends JpaRepository<User, UUID> {
 	Optional<User> findByEmail(String email);
+
+	Optional<User> findByNome(String nome);
 
 	Optional<User> findByUsername(String username);
 }
