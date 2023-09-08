@@ -11,9 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import BackEnd.CapstoneProject.Likes.Like;
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.comments.Comment;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,8 +51,10 @@ public class User implements UserDetails {
 
 	@OneToMany
 	private List<Post> post = new ArrayList<>();
-	@OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+	@OneToMany
 	private List<Comment> comment = new ArrayList<>();
+	@OneToMany
+	private List<Like> like = new ArrayList<>();
 
 	public User(String nome, String cognome, String username, String email, String password, Ruolo role) {
 		this.nome = nome;

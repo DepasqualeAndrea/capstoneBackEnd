@@ -1,10 +1,15 @@
 package BackEnd.CapstoneProject.comments;
 
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepo extends JpaRepository<Comment, UUID> {
 
-//	ArrayList<Comment> findAllByPostID(UUID postId);
+	ArrayList<Comment> findAllByPostId(UUID postId);
+
+	Optional<Comment> findByUsername(String username);
+
 }

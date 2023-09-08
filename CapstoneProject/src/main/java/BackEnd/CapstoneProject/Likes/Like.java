@@ -1,16 +1,11 @@
 package BackEnd.CapstoneProject.Likes;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
-import BackEnd.CapstoneProject.Post.Post;
-import BackEnd.CapstoneProject.User.User;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,16 +20,16 @@ public class Like {
 	@Id
 	@GeneratedValue
 	private UUID likeId;
+	private LocalDate timestamp;
+	private Integer targetType;
+	private UUID postId;
+	private UUID userId;
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "user_id", referencedColumnName = "userId")
-	private User userId;
+	public Like(LocalDate timestamp, Integer targetType, UUID postId, UUID userId) {
+		this.timestamp = timestamp;
+		this.targetType = targetType;
+		this.postId = postId;
+		this.userId = userId;
+	}
 
-	private Date timestamp;
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "post_id", referencedColumnName = "postId")
-	private Post postId;
-
-	private Integer target_type;
 }

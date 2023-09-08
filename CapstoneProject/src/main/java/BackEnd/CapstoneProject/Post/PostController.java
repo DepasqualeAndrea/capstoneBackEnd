@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,11 +45,11 @@ public class PostController {
 		return created;
 	}
 
-//	@PutMapping("/{postId}")
-//	// @PreAuthorize("hasAuthority('ADMIN')")
-//	public Post updateUtenti(@PathVariable UUID postId, @RequestBody Post body) {
-//		return postService.findByIdAndUpdate(postId, body);
-//	}
+	@PutMapping("/{postId}")
+	// @PreAuthorize("hasAuthority('ADMIN')")
+	public Post updateUtenti(@PathVariable UUID postId, @RequestBody PostPayload body) {
+		return postService.findByIdAndUpdate(postId, body);
+	}
 
 	@DeleteMapping("/{postId}")
 	// @PreAuthorize("hasAuthority('ADMIN')")

@@ -71,7 +71,7 @@ public class UserService {
 
 	public User findByUsername(String username) {
 		return utenteRepo.findByUsername(username)
-				.orElseThrow(() -> new NotFoundException("Username" + username + "non corrispondente"));
+				.orElseThrow(() -> new NotFoundException("Username " + username + " non corrispondente"));
 	}
 
 	public User getCurrentUser() {
@@ -91,15 +91,4 @@ public class UserService {
 		throw new NotFoundException("Utente non trovato");
 	}
 
-//	public User getCurrentUser() {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		String userName = authentication.getName();
-//		Optional<User> user = utenteRepo.findByNome(userName);
-//
-//		if (user.isPresent()) {
-//			return user.get();
-//		} else {
-//			throw new NotFoundException("Utente con nome " + userName + " non trovato");
-//		}
-//	}
 }

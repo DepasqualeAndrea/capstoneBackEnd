@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import BackEnd.CapstoneProject.Likes.Like;
 import BackEnd.CapstoneProject.comments.Comment;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,10 +28,10 @@ public class Post {
 	private String imageUrl;
 	private UUID userId;
 
-	@OneToMany(mappedBy = "postId", cascade = CascadeType.ALL)
+	@OneToMany
 	private List<Comment> comment = new ArrayList<>();
 
-	@OneToMany(mappedBy = "postId", cascade = CascadeType.ALL)
+	@OneToMany
 	private List<Like> like = new ArrayList<>();
 
 	public Post(LocalDate timestamp, String description, String imageUrl, UUID userId) {
