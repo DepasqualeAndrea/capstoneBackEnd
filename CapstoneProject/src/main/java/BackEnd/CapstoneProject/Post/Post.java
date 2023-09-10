@@ -32,7 +32,7 @@ public class Post {
 	private List<Comment> comment = new ArrayList<>();
 
 	@OneToMany
-	private List<Like> like = new ArrayList<>();
+	private List<Like> like;
 
 	public Post(LocalDate timestamp, String description, String imageUrl, UUID userId) {
 		this.timestamp = timestamp;

@@ -29,8 +29,8 @@ public class UserService {
 		utenteRepo.findByEmail(body.getEmail()).ifPresent(u -> {
 			throw new BadRequestException("L'email è gia presente del database");
 		});
-		User newUtente = new User(body.getNome(), body.getCognome(), body.getUsername(), body.getEmail(),
-				body.getPassword(), Ruolo.USER);
+		User newUtente = new User(body.getNome(), body.getCognome(), body.getUsername(), body.getImageProfile(),
+				body.getEmail(), body.getPassword(), Ruolo.USER);
 		return utenteRepo.save(newUtente);
 	}
 
@@ -49,6 +49,7 @@ public class UserService {
 		found.setNome(body.getNome());
 		found.setCognome(body.getCognome());
 		found.setUsername(body.getUsername());
+		found.setImageprofile(body.getImageprofile());
 		found.setEmail(body.getEmail());
 		found.setPassword(body.getPassword());
 		return utenteRepo.save(found);

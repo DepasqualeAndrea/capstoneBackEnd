@@ -46,6 +46,7 @@ public class User implements UserDetails {
 	@Column(nullable = true, unique = true)
 	private String email;
 	private String password;
+	private String Imageprofile;
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
 
@@ -56,10 +57,12 @@ public class User implements UserDetails {
 	@OneToMany
 	private List<Like> like = new ArrayList<>();
 
-	public User(String nome, String cognome, String username, String email, String password, Ruolo role) {
+	public User(String nome, String cognome, String username, String Imageprofile, String email, String password,
+			Ruolo role) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.username = username;
+		this.Imageprofile = Imageprofile;
 		this.email = email;
 		this.password = password;
 		this.role = role;
