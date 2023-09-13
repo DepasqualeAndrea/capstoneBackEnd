@@ -48,12 +48,11 @@ public class AuthController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public User saveUser(@RequestParam("image") List<MultipartFile> image, @ModelAttribute User body)
 			throws IOException {
-		// Controlla se i file sono vuoti o non sono stati forniti
+
 		if (image.isEmpty()) {
 			throw new IllegalArgumentException("Le immagini non sono state fornite.");
 		}
 
-		// Creare una lista di ImageData per memorizzare le immagini caricate
 		List<ImageData> imageList = new ArrayList<>();
 		User user = new User();
 		user.setNome(body.getNome());
@@ -66,14 +65,14 @@ public class AuthController {
 		System.out.println(utente.getUserId());
 		for (MultipartFile file : image) {
 			byte[] imageBytes = file.getBytes();
-
-			// Salva l'immagine nel database o su disco e aggiungila alla lista
+			String name = file.getName();
+			String type = file.getContentType();
 			ImageData imageData = new ImageData();
-			imageData.setName("ciao");
-			imageData.setType("mielo");
+			imageData.setName(name);
+			imageData.setType(type);
 			imageData.setImageData(imageBytes);
-			imageData.setUser(utente); // Imposta
-			// l'utente associato all'immagine
+			imageData.setUser(utente);
+
 			imageRepository.save(imageData);
 			imageList.add(imageData);
 			utente.setImagedata(imageList);

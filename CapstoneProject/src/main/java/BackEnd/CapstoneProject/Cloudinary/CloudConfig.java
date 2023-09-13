@@ -1,4 +1,4 @@
-package BackEnd.CapstoneProject.image;
+package BackEnd.CapstoneProject.Cloudinary;
 
 import java.util.HashMap;
 import java.util.Map;

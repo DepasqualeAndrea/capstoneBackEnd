@@ -9,14 +9,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import BackEnd.CapstoneProject.Cloudinary.CloudinaryService;
 
 @CrossOrigin
 @RestController
@@ -24,6 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 	@Autowired
 	PostService postService;
+
+	@Autowired
+	CloudinaryService cloudService;
 
 	@GetMapping
 	public Page<Post> getUtenti(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
@@ -38,11 +44,23 @@ public class PostController {
 	}
 
 	@PostMapping("/save")
-	// @PreAuthorize("hasAuthority('ADMIN')")
-	@ResponseStatus(HttpStatus.CREATED)
-	public Post savePost(@RequestBody PostPayload body) {
-		Post created = postService.creaPost(body);
-		return created;
+	public ResponseEntity<Post> createPost(@RequestParam("imageFile") MultipartFile imageFile,
+			@ModelAttribute PostPayload body) {
+		// Carica l'immagine su Cloudinary e ottieni l'URL dell'immagine
+		String imageUrl = cloudService.uploadImageToCloudinary(imageFile);
+
+		if (imageUrl == null) {
+			// Gestisci l'errore se il caricamento dell'immagine fallisce
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+
+		Post newPost = new Post();
+		newPost.setImageUrl(imageUrl);
+
+		// Salva il post nel tuo servizio (usando il PostService)
+		Post savedPost = postService.creaPost(newPost);
+
+		return ResponseEntity.ok(savedPost);
 	}
 
 	@PutMapping("/{postId}")

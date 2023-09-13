@@ -1,4 +1,4 @@
-package BackEnd.CapstoneProject.image;
+package BackEnd.CapstoneProject.Cloudinary;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,13 +29,21 @@ public class CloudinaryService implements CloudinaryImageService {
 
 	}
 
+	public String uploadImageToCloudinary(MultipartFile imageFile) {
+		try {
+			// Carica l'immagine su Cloudinary e ottieni l'URL dell'immagine
+			Map<?, ?> uploadResult = cloudinary.uploader().upload(imageFile.getBytes(), ObjectUtils.emptyMap());
+			return uploadResult.get("url").toString();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public String uploadImage(MultipartFile imageFile) throws IOException {
 		@SuppressWarnings("unchecked")
-		Map<String, Object> params = ObjectUtils.asMap("folder", "your-folder-name", // Facoltativo: specifica una
-																						// cartella personalizzata su
-																						// Cloudinary
-				"public_id", "unique-public-id" // Facoltativo: specifica un ID univoco per l'immagine
-		);
+		Map<String, Object> params = ObjectUtils.asMap("folder", "your-folder-name");
 
 		Map uploadResult = cloudinary.uploader().upload(imageFile.getBytes(), params);
 		return (String) uploadResult.get("secure_url");

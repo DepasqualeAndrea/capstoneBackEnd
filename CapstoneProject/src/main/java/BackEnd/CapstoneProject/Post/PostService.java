@@ -15,6 +15,7 @@ import BackEnd.CapstoneProject.Exception.NotFoundException;
 import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PostService {
@@ -29,6 +30,7 @@ public class PostService {
 		this.userRepo = userRepo;
 	}
 
+	@Transactional
 	public Post creaPost(PostPayload body) {
 		postRepo.findByDescription(body.getDescription()).ifPresent(u -> {
 			throw new BadRequestException("Il post é gia Esistente!");
