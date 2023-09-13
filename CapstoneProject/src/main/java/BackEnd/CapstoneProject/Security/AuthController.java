@@ -21,11 +21,9 @@ import BackEnd.CapstoneProject.Exception.UnauthorizedException;
 import BackEnd.CapstoneProject.Payload.UserLoginPayload;
 import BackEnd.CapstoneProject.User.Ruolo;
 import BackEnd.CapstoneProject.User.User;
-import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 import BackEnd.CapstoneProject.dbimage.ImageData;
 import BackEnd.CapstoneProject.dbimage.StorageRepo;
-import BackEnd.CapstoneProject.dbimage.StorageService;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,10 +32,6 @@ public class AuthController {
 	private UserService utenteService;
 	@Autowired
 	private StorageRepo imageRepository;
-	@Autowired
-	private StorageService service;
-	@Autowired
-	private UserRepo utenteRepo;
 	@Autowired
 	JWTTools jwtTools;
 

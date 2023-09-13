@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import BackEnd.CapstoneProject.Likes.Like;
@@ -45,12 +46,14 @@ public class User implements UserDetails {
 	private String username;
 	@Column(nullable = true, unique = true)
 	private String email;
+	@JsonIgnore
 	private String password;
 
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
 
 	@OneToMany(fetch = FetchType.EAGER)
+	@JsonIgnore
 	private List<ImageData> imagedata = new ArrayList<>();
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Post> post = new ArrayList<>();

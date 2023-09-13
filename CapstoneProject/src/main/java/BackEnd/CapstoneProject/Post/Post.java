@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import BackEnd.CapstoneProject.Likes.Like;
 import BackEnd.CapstoneProject.comments.Comment;
+import BackEnd.CapstoneProject.dbimage.ImageData;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -25,16 +29,21 @@ public class Post {
 	private UUID postId;
 	private LocalDate timestamp;
 	private String description;
+	@JsonIgnore
 	private String imageUrl;
 	private UUID userId;
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
+	@JsonIgnore
 	private List<Comment> comment = new ArrayList<>();
-
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
+	@JsonIgnore
+	private List<ImageData> imagedata = new ArrayList<>();
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Like> like;
 
-	public Post(LocalDate timestamp, String description, String imageUrl, UUID userId) {
+	public Post(List<ImageData> imagedata, LocalDate timestamp, String description, String imageUrl, UUID userId) {
 		this.timestamp = timestamp;
 		this.description = description;
 		this.imageUrl = imageUrl;

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.User.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,5 +37,8 @@ public class ImageData {
 	@ManyToOne
 	@JsonIgnore
 	private User user;
+
+	@ManyToOne
+	private Post post;
 
 }

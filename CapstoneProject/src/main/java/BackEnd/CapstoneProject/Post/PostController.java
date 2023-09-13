@@ -1,10 +1,13 @@
 package BackEnd.CapstoneProject.Post;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,16 +23,28 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import BackEnd.CapstoneProject.Cloudinary.CloudinaryService;
+import BackEnd.CapstoneProject.User.User;
+import BackEnd.CapstoneProject.User.UserRepo;
+import BackEnd.CapstoneProject.User.UserService;
+import BackEnd.CapstoneProject.dbimage.ImageData;
+import BackEnd.CapstoneProject.dbimage.StorageRepo;
 
 @CrossOrigin
 @RestController
 @RequestMapping("/user/post")
 public class PostController {
 	@Autowired
-	PostService postService;
-
+	private PostService postService;
 	@Autowired
-	CloudinaryService cloudService;
+	private UserService userService;
+	@Autowired
+	private CloudinaryService cloudService;
+	@Autowired
+	private PostRepository postRepo;
+	@Autowired
+	private UserRepo userRepo;
+	@Autowired
+	private StorageRepo imageRepository;
 
 	@GetMapping
 	public Page<Post> getUtenti(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
@@ -44,23 +59,40 @@ public class PostController {
 	}
 
 	@PostMapping("/save")
-	public ResponseEntity<Post> createPost(@RequestParam("imageFile") MultipartFile imageFile,
-			@ModelAttribute PostPayload body) {
-		// Carica l'immagine su Cloudinary e ottieni l'URL dell'immagine
-		String imageUrl = cloudService.uploadImageToCloudinary(imageFile);
+	public Post createPost(@RequestParam("image") List<MultipartFile> image, @ModelAttribute Post body)
+			throws IOException {
 
-		if (imageUrl == null) {
-			// Gestisci l'errore se il caricamento dell'immagine fallisce
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		if (image.isEmpty()) {
+			throw new IllegalArgumentException("Le immagini non sono state fornite.");
 		}
+		List<ImageData> imageList = new ArrayList<>();
+		Post post = new Post();
+		post.setUserId(userService.getCurrentUser().getUserId());
+		post.setTimestamp(LocalDate.now());
+		post.setDescription(body.getDescription());
+		// post.setImageUrl(body.getImageUrl());
+		User user = userService.getCurrentUser();
+		user.getPost().add(post);
+		post = postRepo.save(post);
+		userRepo.save(user);
 
-		Post newPost = new Post();
-		newPost.setImageUrl(imageUrl);
+		for (MultipartFile file : image) {
+			byte[] imageBytes = file.getBytes();
+			String name = file.getName();
+			String type = file.getContentType();
+			ImageData imageData = new ImageData();
+			imageData.setName(name);
+			imageData.setType(type);
+			imageData.setImageData(imageBytes);
+			imageData.setPost(post);
+			imageData.setUser(user);
 
-		// Salva il post nel tuo servizio (usando il PostService)
-		Post savedPost = postService.creaPost(newPost);
+			imageRepository.save(imageData);
+			imageList.add(imageData);
+			post.setImagedata(imageList);
 
-		return ResponseEntity.ok(savedPost);
+		}
+		return postService.saveUserWithImages(post, imageList);
 	}
 
 	@PutMapping("/{postId}")
