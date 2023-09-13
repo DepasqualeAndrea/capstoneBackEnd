@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import BackEnd.CapstoneProject.Likes.Like;
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.comments.Comment;
+import BackEnd.CapstoneProject.dbimage.ImageData;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,7 +47,9 @@ public class User implements UserDetails {
 	@Column(nullable = true, unique = true)
 	private String email;
 	private String password;
-	private String Imageprofile;
+
+	@OneToMany
+	private ImageData image;
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
 
@@ -57,12 +60,12 @@ public class User implements UserDetails {
 	@OneToMany
 	private List<Like> like = new ArrayList<>();
 
-	public User(String nome, String cognome, String username, String Imageprofile, String email, String password,
+	public User(ImageData image, String nome, String cognome, String username, String email, String password,
 			Ruolo role) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.username = username;
-		this.Imageprofile = Imageprofile;
+		this.image = image;
 		this.email = email;
 		this.password = password;
 		this.role = role;
