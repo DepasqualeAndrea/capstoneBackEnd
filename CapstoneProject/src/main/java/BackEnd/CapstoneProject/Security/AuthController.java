@@ -1,6 +1,8 @@
 package BackEnd.CapstoneProject.Security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,15 +19,25 @@ import org.springframework.web.multipart.MultipartFile;
 
 import BackEnd.CapstoneProject.Exception.UnauthorizedException;
 import BackEnd.CapstoneProject.Payload.UserLoginPayload;
+import BackEnd.CapstoneProject.User.Ruolo;
 import BackEnd.CapstoneProject.User.User;
+import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
+import BackEnd.CapstoneProject.dbimage.ImageData;
+import BackEnd.CapstoneProject.dbimage.StorageRepo;
+import BackEnd.CapstoneProject.dbimage.StorageService;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 	@Autowired
-	UserService utenteService;
-
+	private UserService utenteService;
+	@Autowired
+	private StorageRepo imageRepository;
+	@Autowired
+	private StorageService service;
+	@Autowired
+	private UserRepo utenteRepo;
 	@Autowired
 	JWTTools jwtTools;
 
@@ -34,102 +46,42 @@ public class AuthController {
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
-	public User saveUser(@RequestParam("image") MultipartFile file, @ModelAttribute User body) throws IOException {
-		// Controlla se il file è vuoto o non è stato fornito
-		if (file.isEmpty()) {
-			throw new IllegalArgumentException("L'immagine non è stata fornita.");
+	public User saveUser(@RequestParam("image") List<MultipartFile> image, @ModelAttribute User body)
+			throws IOException {
+		// Controlla se i file sono vuoti o non sono stati forniti
+		if (image.isEmpty()) {
+			throw new IllegalArgumentException("Le immagini non sono state fornite.");
 		}
 
-		// Esegui il salvataggio dell'immagine
-		byte[] imageBytes = file.getBytes(); // Converte MultipartFile in un array di byte
-		// Ora puoi utilizzare imageBytes per salvare l'immagine su disco o nel database
-		// utilizzando userService.saveImage()
+		// Creare una lista di ImageData per memorizzare le immagini caricate
+		List<ImageData> imageList = new ArrayList<>();
+		User user = new User();
+		user.setNome(body.getNome());
+		user.setCognome(body.getCognome());
+		user.setUsername(body.getUsername());
+		user.setEmail(body.getEmail());
+		user.setPassword(bcrypt.encode(body.getPassword()));
+		user.setRole(Ruolo.USER);
+		User utente = utenteService.creaUtente(user);
+		System.out.println(utente.getUserId());
+		for (MultipartFile file : image) {
+			byte[] imageBytes = file.getBytes();
 
-		// Codifica la password prima di salvarla
-		body.setPassword(bcrypt.encode(body.getPassword()));
+			// Salva l'immagine nel database o su disco e aggiungila alla lista
+			ImageData imageData = new ImageData();
+			imageData.setName("ciao");
+			imageData.setType("mielo");
+			imageData.setImageData(imageBytes);
+			imageData.setUser(utente); // Imposta
+			// l'utente associato all'immagine
+			imageRepository.save(imageData);
+			imageList.add(imageData);
+			utente.setImagedata(imageList);
 
-		// Salva l'utente nel database passando l'array di byte dell'immagine
-		User created = utenteService.saveUserWithImage(body, imageBytes);
-		return created;
+		}
+
+		return utenteService.saveUserWithImages(utente, imageList);
 	}
-
-//	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//	@ResponseStatus(HttpStatus.CREATED)
-//	public User saveUser(@RequestParam("image") MultipartFile file, @ModelAttribute User body) throws IOException {
-//		body.setPassword(bcrypt.encode(body.getPassword()));
-//		User created = utenteService.creaUtente(body, file);
-//		return created;
-//	}
-//	@PostMapping("/register")
-//	public ResponseEntity<String> registerUser(@ModelAttribute UserRegistrationModel registrationModel) {
-//		try {
-//			// Controlla se body è nullo
-//			if (registrationModel == null) {
-//				return ResponseEntity.badRequest().body("Richiesta di registrazione non valida.");
-//			}
-//
-//			// Controlla se l'immagine è vuota o non è stata fornita
-//			MultipartFile image = registrationModel.getImage();
-//			if (image.isEmpty()) {
-//				return ResponseEntity.badRequest().body("L'immagine non è stata fornita.");
-//			}
-//
-//			// Controlla se l'utente è nullo o alcuni dei campi essenziali sono vuoti
-//			User user = registrationModel.getUser();
-//			if (user == null || StringUtils.isEmpty(user.getNome()) || StringUtils.isEmpty(user.getCognome())) {
-//				return ResponseEntity.badRequest().body("Dati utente incompleti.");
-//			}
-//
-//			// Esegui il salvataggio dell'immagine
-//			byte[] imageBytes = image.getBytes(); // Converte MultipartFile in un array di byte
-//			// Ora puoi utilizzare imageBytes per salvare l'immagine su disco o nel database
-//
-//			// Esegui il salvataggio dell'utente
-//			utenteService.saveUserWithImage(user, imageBytes); // Passa imageBytes invece di image
-//
-//			return ResponseEntity.ok("Utente registrato con successo.");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body("Errore durante il salvataggio dell'utente e/o dell'immagine.");
-//		}
-//	}
-
-//	@PostMapping("/register")
-//	public ResponseEntity<String> registerUser(@ModelAttribute UserRegistrationModel registrationModel) {
-//		try {
-//			// Controlla se body è nullo
-//			if (registrationModel == null) {
-//				return ResponseEntity.badRequest().body("Richiesta di registrazione non valida.");
-//			}
-//
-//			// Controlla se l'immagine è vuota o non è stata fornita
-//			MultipartFile image = registrationModel.getImage();
-//			if (image.isEmpty()) {
-//				return ResponseEntity.badRequest().body("L'immagine non è stata fornita.");
-//			}
-//
-//			// Controlla se l'utente è nullo o alcuni dei campi essenziali sono vuoti
-//			User user = registrationModel.getUser();
-//			if (user == null || StringUtils.isEmpty(user.getNome()) || StringUtils.isEmpty(user.getCognome())) {
-//				return ResponseEntity.badRequest().body("Dati utente incompleti.");
-//			}
-//
-//			// Esegui il salvataggio dell'immagine
-//			byte[] imageBytes = image.getBytes();
-//			// Puoi implementare la logica per salvare l'immagine su disco o nel database
-//			// utilizzando userService.saveImage()
-//
-//			// Esegui il salvataggio dell'utente
-//			utenteService.creaUtente(user, image);
-//
-//			return ResponseEntity.ok("Utente registrato con successo.");
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//					.body("Errore durante il salvataggio dell'utente e/o dell'immagine.");
-//		}
-//	}
 
 	@PostMapping("/login")
 

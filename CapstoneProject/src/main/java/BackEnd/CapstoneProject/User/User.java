@@ -19,11 +19,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +31,6 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "Utenti")
-@Data
 @Getter
 @Setter
 @NoArgsConstructor
@@ -48,27 +47,26 @@ public class User implements UserDetails {
 	private String email;
 	private String password;
 
-	@OneToMany
-	private ImageData image;
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
+	private List<ImageData> imagedata = new ArrayList<>();
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Post> post = new ArrayList<>();
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Comment> comment = new ArrayList<>();
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Like> like = new ArrayList<>();
 
-	public User(ImageData image, String nome, String cognome, String username, String email, String password,
+	public User(List<ImageData> list, String nome, String cognome, String username, String email, String password,
 			Ruolo role) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.username = username;
-		this.image = image;
 		this.email = email;
 		this.password = password;
-		this.role = role;
+		this.role = Ruolo.USER;
 	}
 
 	@Override
