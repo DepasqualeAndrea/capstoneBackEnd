@@ -70,7 +70,7 @@ public class PostController {
 		post.setUserId(userService.getCurrentUser().getUserId());
 		post.setTimestamp(LocalDate.now());
 		post.setDescription(body.getDescription());
-		// post.setImageUrl(body.getImageUrl());
+		post.setImageUrl(body.getImageUrl());
 		User user = userService.getCurrentUser();
 		user.getPost().add(post);
 		post = postRepo.save(post);

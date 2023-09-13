@@ -29,7 +29,6 @@ public class Post {
 	private UUID postId;
 	private LocalDate timestamp;
 	private String description;
-	@JsonIgnore
 	private String imageUrl;
 	private UUID userId;
 
