@@ -26,22 +26,18 @@ public class UserController {
 
 	@GetMapping
 	public User getCurrentUserWithDetails() {
-		// Recupera l'utente corrente dal contesto di sicurezza
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		// Verifica se l'utente è autenticato
 		if (authentication != null && authentication.isAuthenticated()) {
-			// Estrai il nome utente (solitamente l'ID dell'utente) dall'oggetto
-			// Authentication
+
 			String username = authentication.getName();
 
-			// Ottieni l'utente dal servizio
 			User user = utenteService.findByUsername(username);
 
 			return user;
 		} else {
-			// Gestisci il caso in cui l'utente non sia autenticato
-			// Restituisci un errore o un messaggio appropriato
+
 			return null;
 		}
 	}

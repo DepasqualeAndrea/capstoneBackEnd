@@ -56,7 +56,6 @@ public class User implements UserDetails {
 	private Ruolo role;
 
 	@OneToMany(fetch = FetchType.EAGER)
-	@JsonIgnore
 	private List<ImageData> imagedata = new ArrayList<>();
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Post> post = new ArrayList<>();

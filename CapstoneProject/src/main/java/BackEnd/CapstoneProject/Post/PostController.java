@@ -30,7 +30,7 @@ import BackEnd.CapstoneProject.dbimage.StorageRepo;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/utente/post")
+@RequestMapping("/user/post")
 public class PostController {
 	@Autowired
 	private PostService postService;
@@ -46,19 +46,19 @@ public class PostController {
 	private StorageRepo imageRepository;
 
 	@GetMapping
-	public Page<Post> getUtenti(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+	public Page<Post> getPosts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
 			@RequestParam(defaultValue = "userId") String sortBy) {
 		return postService.find(page, size, sortBy);
 	}
 
 	@GetMapping("/{postId}")
-	public Post findUtentiById(@PathVariable UUID postId) {
+	public Post findPostsById(@PathVariable UUID postId) {
 		return postService.findById(postId);
 
 	}
 
 	@PostMapping("/save")
-	public Post createPost(@RequestParam("image") List<MultipartFile> image, @ModelAttribute Post body)
+	public Post creaPost(@RequestParam("image") List<MultipartFile> image, @ModelAttribute Post body)
 			throws IOException {
 
 		if (image.isEmpty()) {
@@ -95,7 +95,7 @@ public class PostController {
 
 	@PutMapping("/{postId}")
 	// @PreAuthorize("hasAuthority('ADMIN')")
-	public Post updateUtenti(@PathVariable UUID postId, @RequestBody PostPayload body) {
+	public Post updatePosts(@PathVariable UUID postId, @RequestBody PostPayload body) {
 		return postService.findByIdAndUpdate(postId, body);
 	}
 
