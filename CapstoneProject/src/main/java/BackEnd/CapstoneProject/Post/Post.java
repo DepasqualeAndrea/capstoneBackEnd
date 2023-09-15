@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.Likes.Like;
 import BackEnd.CapstoneProject.comments.Comment;
 import BackEnd.CapstoneProject.dbimage.ImageData;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "Posts")
 @Data
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "postId")
 public class Post {
 	@Id
 	@GeneratedValue
@@ -30,15 +33,13 @@ public class Post {
 	private LocalDate timestamp;
 	private String description;
 	private String imageUrl;
+	@Column(name = "user_id")
 	private UUID userId;
 
 	@OneToMany(fetch = FetchType.EAGER)
-	@JsonIgnore
 	private List<Comment> comment = new ArrayList<>();
 	@OneToMany(fetch = FetchType.EAGER)
-	@JsonIgnore
 	private List<ImageData> imagedata = new ArrayList<>();
-	@JsonIgnore
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Like> like;
 

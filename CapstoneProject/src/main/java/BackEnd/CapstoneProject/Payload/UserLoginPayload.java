@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class UserLoginPayload {
-	String username;
 	String email;
 	String password;
 }

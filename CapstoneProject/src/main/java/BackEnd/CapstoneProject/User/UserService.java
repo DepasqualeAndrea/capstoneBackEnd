@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 import BackEnd.CapstoneProject.Exception.BadRequestException;
 import BackEnd.CapstoneProject.Exception.NotFoundException;
 import BackEnd.CapstoneProject.Payload.UserRequestPayload;
+import BackEnd.CapstoneProject.Post.PostRepository;
+import BackEnd.CapstoneProject.comments.CommentRepo;
 import BackEnd.CapstoneProject.dbimage.ImageData;
 import BackEnd.CapstoneProject.dbimage.StorageRepo;
 import jakarta.transaction.Transactional;
@@ -23,12 +24,15 @@ import jakarta.transaction.Transactional;
 @Service
 public class UserService {
 	private final UserRepo utenteRepo;
-	@Autowired
-	private StorageRepo imageRepository;
+	private final PostRepository postRepo;
+	private final CommentRepo commentRepo;
+	private final StorageRepo imageRepo;
 
-	@Autowired
-	public UserService(UserRepo utenteRepo) {
+	public UserService(UserRepo utenteRepo, StorageRepo imageRepo, PostRepository postRepo, CommentRepo commentRepo) {
 		this.utenteRepo = utenteRepo;
+		this.postRepo = postRepo;
+		this.commentRepo = commentRepo;
+		this.imageRepo = imageRepo;
 	}
 
 	@Transactional
@@ -48,7 +52,7 @@ public class UserService {
 		try {
 			// Salva le immagini nel database o su disco
 			for (ImageData imageData : images) {
-				imageRepository.save(imageData);
+				imageRepo.save(imageData);
 			}
 
 			// Associa le immagini all'utente

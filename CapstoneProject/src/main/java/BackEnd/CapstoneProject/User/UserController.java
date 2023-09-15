@@ -3,33 +3,47 @@ package BackEnd.CapstoneProject.User;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import BackEnd.CapstoneProject.Payload.UserRequestPayload;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user/utente")
 public class UserController {
-	private final UserService utenteService;
-
 	@Autowired
-	public UserController(UserService utenteService) {
-		this.utenteService = utenteService;
-	}
+	private UserService utenteService;
+	@Autowired
+	private UserRepo userRepo;
 
 	@GetMapping
-	public Page<User> getUtenti(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "userId") String sortBy) {
-		return utenteService.find(page, size, sortBy);
+	public User getCurrentUserWithDetails() {
+		// Recupera l'utente corrente dal contesto di sicurezza
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		// Verifica se l'utente è autenticato
+		if (authentication != null && authentication.isAuthenticated()) {
+			// Estrai il nome utente (solitamente l'ID dell'utente) dall'oggetto
+			// Authentication
+			String username = authentication.getName();
+
+			// Ottieni l'utente dal servizio
+			User user = utenteService.findByUsername(username);
+
+			return user;
+		} else {
+			// Gestisci il caso in cui l'utente non sia autenticato
+			// Restituisci un errore o un messaggio appropriato
+			return null;
+		}
 	}
 
 	@GetMapping("/{userId}")

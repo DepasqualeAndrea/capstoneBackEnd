@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,24 +76,16 @@ public class AuthController {
 	}
 
 	@PostMapping("/login")
+	public TokenResponse login(@RequestBody UserLoginPayload body) {
 
-	public ResponseEntity<TokenResponse> login(@RequestBody UserLoginPayload body) {
+		User user = utenteService.findByEmail(body.getEmail());
 
-		User utente = null;
-
-		if (body.getEmail() != null) {
-			utente = utenteService.findByEmail(body.getEmail());
-		} else {
-			utente = utenteService.findByUsername(body.getUsername());
-		}
-
-		if (utente != null && bcrypt.matches(body.getPassword(), utente.getPassword())) {
-			String token = jwtTools.creaToken(utente);
-			return new ResponseEntity<>(new TokenResponse(token), HttpStatus.OK);
+		if (bcrypt.matches(body.getPassword(), user.getPassword())) {
+			String token = jwtTools.createToken(user);
+			return new TokenResponse(token);
 
 		} else {
-			throw new UnauthorizedException(
-					"Credenziali non valide, verifica che la password o Email ed Username siano corrette");
+			throw new UnauthorizedException("Credenziali non valide");
 		}
 	}
 }

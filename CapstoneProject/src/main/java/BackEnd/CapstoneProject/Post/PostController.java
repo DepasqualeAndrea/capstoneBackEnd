@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import BackEnd.CapstoneProject.Cloudinary.CloudinaryService;
 import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
@@ -31,14 +30,14 @@ import BackEnd.CapstoneProject.dbimage.StorageRepo;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/user/post")
+@RequestMapping("/utente/post")
 public class PostController {
 	@Autowired
 	private PostService postService;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private CloudinaryService cloudService;
+//	@Autowired
+//	private CloudinaryService cloudService;
 	@Autowired
 	private PostRepository postRepo;
 	@Autowired
@@ -85,7 +84,6 @@ public class PostController {
 			imageData.setType(type);
 			imageData.setImageData(imageBytes);
 			imageData.setPost(post);
-			imageData.setUser(user);
 
 			imageRepository.save(imageData);
 			imageList.add(imageData);

@@ -22,36 +22,33 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JWTFilter extends OncePerRequestFilter {
 
 	@Autowired
-	JWTTools jTools;
+	JWTTools jwttools;
 	@Autowired
-	UserService utenteService;
+	UserService uS;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String header = request.getHeader("Authorization");
-		if (header == null || !header.startsWith("Bearer "))
-			throw new UnauthorizedException("Inserisci il token nell'autorization Header");
-		String token = header.substring(7);
-		System.out.println("Token: -> " + token);
+		String authHeader = request.getHeader("Authorization");
+		if (authHeader == null || !authHeader.startsWith("Bearer "))
+			throw new UnauthorizedException("Per favore passa il token nell'authorization header");
+		String token = authHeader.substring(7);
+		System.out.println("TOKEN = " + token);
+		jwttools.verifyToken(token);
+		String id = jwttools.extractSubject(token);
+		User currentUser = uS.findById(UUID.fromString(id));
 
-		jTools.verificaToken(token);
-		String id = jTools.extractSubject(token);
-		User utenteCorrente = utenteService.findById(UUID.fromString(id));
-
-		UsernamePasswordAuthenticationToken autorizzationToken = new UsernamePasswordAuthenticationToken(utenteCorrente,
-				null, utenteCorrente.getAuthorities());
-
-		SecurityContextHolder.getContext().setAuthentication(autorizzationToken);
-
+		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(currentUser, null,
+				currentUser.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authToken);
 		filterChain.doFilter(request, response);
 
 	}
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		System.out.println(request.getServletPath());
-		return new AntPathMatcher().match("/auth/**", request.getServletPath());
+		String path = request.getServletPath();
+		return new AntPathMatcher().match("/auth/**", path) || new AntPathMatcher().match("/marketData/**", path);
 	}
 
 }

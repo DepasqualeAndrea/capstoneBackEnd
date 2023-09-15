@@ -1,5 +1,6 @@
 package BackEnd.CapstoneProject.Post;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,8 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
-	Optional<Post> findById(UUID postid);
+	Optional<Post> findById(UUID postId);
 
 	Optional<Post> findByDescription(String description);
+
+	List<Post> findByUserId(UUID userId);
 
 }
