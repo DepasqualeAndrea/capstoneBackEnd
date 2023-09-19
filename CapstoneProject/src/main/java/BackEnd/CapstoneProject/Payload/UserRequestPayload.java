@@ -1,6 +1,11 @@
 package BackEnd.CapstoneProject.Payload;
 
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import BackEnd.CapstoneProject.User.Ruolo;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,5 +30,12 @@ public class UserRequestPayload {
 	private String email;
 	@NotNull(message = "La password è obbligatoria")
 	private String password;
+	private String Bio;
+	@Column(length = 16)
+	private String genere;
+	@Column(length = 128)
+	private String Citta;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDate dataDiNascita;
 	private Ruolo role;
 }

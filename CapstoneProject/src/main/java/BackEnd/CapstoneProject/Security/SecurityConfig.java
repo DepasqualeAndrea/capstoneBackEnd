@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 	@Autowired
-	JWTFilter jwtFilter;
+	JWTAuthFilter jwtFilter;
 
 	@Autowired
 	CorsFilter corsFilter;
@@ -33,7 +33,7 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**").permitAll());
 
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-		http.addFilterBefore(corsFilter, JWTFilter.class);
+		http.addFilterBefore(corsFilter, JWTAuthFilter.class);
 
 		return http.build();
 	}

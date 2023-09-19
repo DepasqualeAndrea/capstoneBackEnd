@@ -1,6 +1,5 @@
 package BackEnd.CapstoneProject.User;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,35 +41,38 @@ public class UserService {
 		});
 
 		User newUtente = new User(body.getImagedata(), body.getNome(), body.getCognome(), body.getUsername(),
-				body.getEmail(), body.getPassword(), Ruolo.USER);
+				body.getEmail(), body.getPassword(), Ruolo.USER, body.getDataRegistrazione());
 
 		return utenteRepo.save(newUtente);
 	}
 
 	@Transactional
-	public User saveUserWithImages(User user, List<ImageData> images) {
+	public User saveUserWithImage(User user, ImageData image) {
 		try {
-			// Salva le immagini nel database o su disco
-			for (ImageData imageData : images) {
-				imageRepo.save(imageData);
-			}
-
-			// Associa le immagini all'utente
-			user.setImagedata(images);
-
-			// Salva l'utente nel database
+			imageRepo.save(image);
+			user.setImagedata(image);
 			return utenteRepo.save(user);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Errore nel salvataggio delle immagini e dell'utente.");
+
+			throw new RuntimeException("Errore nel salvataggio dell'immagine e dell'utente.");
 		}
 	}
 
 	@Transactional
-	public Page<User> find(int page, int size, String sort) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+	public Page<User> find(int page, int size, String sortBy, String sortDirection) {
+		Sort.Direction direction = Sort.Direction.ASC;
+		if ("desc".equalsIgnoreCase(sortDirection)) {
+			direction = Sort.Direction.DESC;
+		}
 
-		return utenteRepo.findAll(pageable);
+		Sort sort = Sort.by(direction, sortBy);
+
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		Page<User> users = utenteRepo.findAll(pageable);
+
+		return users;
 	}
 
 	@Transactional
@@ -86,6 +88,9 @@ public class UserService {
 		found.setUsername(body.getUsername());
 		found.setEmail(body.getEmail());
 		found.setPassword(body.getPassword());
+		found.setBio(body.getBio());
+		found.setCitta(body.getCitta());
+		found.setDataDiNascita(body.getDataDiNascita());
 		return utenteRepo.save(found);
 	}
 

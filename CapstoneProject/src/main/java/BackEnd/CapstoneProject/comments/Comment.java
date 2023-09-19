@@ -1,6 +1,6 @@
 package BackEnd.CapstoneProject.comments;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
@@ -22,14 +22,14 @@ public class Comment {
 	private UUID commentId;
 	private String content;
 	private String username;
-	private LocalDate timestamp;
+	private LocalDateTime dataCreazione;
 	private UUID postId;
 	private UUID userId;
 
-	public Comment(LocalDate timestamp, String username, String content, UUID postId, UUID userId) {
+	public Comment(LocalDateTime dataCreazione, String username, String content, UUID postId, UUID userId) {
 		this.content = content;
 		this.username = username;
-		this.timestamp = timestamp;
+		this.dataCreazione = dataCreazione;
 		this.postId = postId;
 		this.userId = userId;
 	}

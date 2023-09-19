@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JWTFilter extends OncePerRequestFilter {
+public class JWTAuthFilter extends OncePerRequestFilter {
 
 	@Autowired
 	JWTTools jwttools;
@@ -50,5 +50,4 @@ public class JWTFilter extends OncePerRequestFilter {
 		String path = request.getServletPath();
 		return new AntPathMatcher().match("/auth/**", path) || new AntPathMatcher().match("/marketData/**", path);
 	}
-
 }

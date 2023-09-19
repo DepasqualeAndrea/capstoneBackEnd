@@ -1,7 +1,6 @@
 package BackEnd.CapstoneProject.Post;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +24,14 @@ public class PostService {
 	private final PostRepository postRepo;
 	private final UserService userService;
 	private final UserRepo userRepo;
-	private final StorageRepo imageRepository;
+	private final StorageRepo imageRepo;
 
 	@Autowired
-	public PostService(PostRepository postRepo, StorageRepo imageRepository, UserService userService,
-			UserRepo userRepo) {
+	public PostService(PostRepository postRepo, StorageRepo imageRepo, UserService userService, UserRepo userRepo) {
 		this.postRepo = postRepo;
 		this.userService = userService;
 		this.userRepo = userRepo;
-		this.imageRepository = imageRepository;
+		this.imageRepo = imageRepo;
 	}
 
 	@Transactional
@@ -43,9 +41,11 @@ public class PostService {
 		});
 		Post post = new Post();
 		post.setUserId(userService.getCurrentUser().getUserId());
-		post.setTimestamp(LocalDate.now());
+		post.setDatacreazione(LocalDateTime.now());
 		post.setDescription(body.getDescription());
 		post.setImageUrl(body.getImageUrl());
+		// post.setUserImage(userService.getCurrentUser().getImagedata());
+		// post.setUsername(userService.getCurrentUser().getUsername());
 		User user = userService.getCurrentUser();
 		user.getPost().add(post);
 		post = postRepo.save(post);
@@ -54,21 +54,17 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post saveUserWithImages(Post post, List<ImageData> images) {
+	public Post savePostWithImages(Post post, ImageData image) {
 		try {
-			// Salva le immagini nel database o su disco
-			for (ImageData imageData : images) {
-				imageRepository.save(imageData);
-			}
 
-			// Associa le immagini all'utente
-			post.setImagedata(images);
+			imageRepo.save(image);
 
-			// Salva l'utente nel database
+			post.setImagedata(image);
+
 			return postRepo.save(post);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Errore nel salvataggio delle immagini e dell'utente.");
+			throw new RuntimeException("Errore nel salvataggio dell'immagine e dell'utente.");
 		}
 	}
 

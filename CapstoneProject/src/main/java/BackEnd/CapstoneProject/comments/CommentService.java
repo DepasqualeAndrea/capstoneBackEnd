@@ -1,6 +1,6 @@
 package BackEnd.CapstoneProject.comments;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -43,7 +43,7 @@ public class CommentService {
 		Comment comment = new Comment();
 		comment.setUserId(userService.getCurrentUser().getUserId());
 		comment.setPostId(body.getPostId());
-		comment.setTimestamp(LocalDate.now());
+		comment.setDataCreazione(LocalDateTime.now());
 		comment.setUsername(userService.getCurrentUser().getUsername());
 		comment.setContent(body.getContent());
 		User user = userService.getCurrentUser();

@@ -1,9 +1,7 @@
 package BackEnd.CapstoneProject.Post;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +34,6 @@ public class PostController {
 	private PostService postService;
 	@Autowired
 	private UserService userService;
-//	@Autowired
-//	private CloudinaryService cloudService;
 	@Autowired
 	private PostRepository postRepo;
 	@Autowired
@@ -46,8 +42,8 @@ public class PostController {
 	private StorageRepo imageRepository;
 
 	@GetMapping
-	public Page<Post> getPosts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "userId") String sortBy) {
+	public Page<Post> getAllPosts(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "userId") String sortBy) {
 		return postService.find(page, size, sortBy);
 	}
 
@@ -58,16 +54,15 @@ public class PostController {
 	}
 
 	@PostMapping("/save")
-	public Post creaPost(@RequestParam("image") List<MultipartFile> image, @ModelAttribute Post body)
-			throws IOException {
+	public Post creaPost(@RequestParam("image") MultipartFile image, @ModelAttribute Post body) throws IOException {
 
 		if (image.isEmpty()) {
 			throw new IllegalArgumentException("Le immagini non sono state fornite.");
 		}
-		List<ImageData> imageList = new ArrayList<>();
+
 		Post post = new Post();
 		post.setUserId(userService.getCurrentUser().getUserId());
-		post.setTimestamp(LocalDate.now());
+		post.setDatacreazione(LocalDateTime.now());
 		post.setDescription(body.getDescription());
 		post.setImageUrl(body.getImageUrl());
 		User user = userService.getCurrentUser();
@@ -75,22 +70,19 @@ public class PostController {
 		post = postRepo.save(post);
 		userRepo.save(user);
 
-		for (MultipartFile file : image) {
-			byte[] imageBytes = file.getBytes();
-			String name = file.getName();
-			String type = file.getContentType();
-			ImageData imageData = new ImageData();
-			imageData.setName(name);
-			imageData.setType(type);
-			imageData.setImageData(imageBytes);
-			imageData.setPost(post);
+		byte[] imageBytes = image.getBytes();
+		String name = image.getName();
+		String type = image.getContentType();
+		ImageData imageData = new ImageData();
+		imageData.setName(name);
+		imageData.setType(type);
+		imageData.setImageData(imageBytes);
+		imageData.setPost(post);
 
-			imageRepository.save(imageData);
-			imageList.add(imageData);
-			post.setImagedata(imageList);
+		imageRepository.save(imageData);
+		post.setImagedata(imageData);
 
-		}
-		return postService.saveUserWithImages(post, imageList);
+		return postService.savePostWithImages(post, imageData);
 	}
 
 	@PutMapping("/{postId}")

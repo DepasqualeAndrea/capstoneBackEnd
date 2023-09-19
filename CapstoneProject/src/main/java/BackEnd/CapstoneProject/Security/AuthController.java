@@ -1,8 +1,7 @@
 package BackEnd.CapstoneProject.Security;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,40 +38,44 @@ public class AuthController {
 
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
-	public User saveUser(@RequestParam("image") List<MultipartFile> image, @ModelAttribute User body)
-			throws IOException {
+	public User saveUser(@RequestParam("image") MultipartFile image, @ModelAttribute User body) throws IOException {
 
 		if (image.isEmpty()) {
-			throw new IllegalArgumentException("Le immagini non sono state fornite.");
+			throw new IllegalArgumentException("L'immagine non è stata fornita.");
 		}
 
-		List<ImageData> imageList = new ArrayList<>();
 		User user = new User();
 		user.setNome(body.getNome());
 		user.setCognome(body.getCognome());
 		user.setUsername(body.getUsername());
 		user.setEmail(body.getEmail());
 		user.setPassword(bcrypt.encode(body.getPassword()));
+		user.setDataDiNascita(body.getDataDiNascita());
+		user.setDataRegistrazione(LocalDate.now());
+
 		user.setRole(Ruolo.USER);
+
+		// Salva l'utente nel database
 		User utente = utenteService.creaUtente(user);
-		System.out.println(utente.getUserId());
-		for (MultipartFile file : image) {
-			byte[] imageBytes = file.getBytes();
-			String name = file.getName();
-			String type = file.getContentType();
-			ImageData imageData = new ImageData();
-			imageData.setName(name);
-			imageData.setType(type);
-			imageData.setImageData(imageBytes);
-			imageData.setUser(utente);
 
-			imageRepository.save(imageData);
-			imageList.add(imageData);
-			utente.setImagedata(imageList);
+		byte[] imageBytes = image.getBytes();
+		String imageName = image.getOriginalFilename();
+		String imageType = image.getContentType();
 
-		}
+		ImageData imageData = new ImageData();
+		imageData.setName(imageName);
+		imageData.setType(imageType);
+		imageData.setImageData(imageBytes);
+		imageData.setUser(utente);
 
-		return utenteService.saveUserWithImages(utente, imageList);
+		// Salva l'immagine nel database
+		imageRepository.save(imageData);
+
+		// Associa l'immagine all'utente
+		utente.setImagedata(imageData);
+
+		// Salva l'utente con l'immagine associata
+		return utenteService.saveUserWithImage(utente, imageData);
 	}
 
 	@PostMapping("/login")
