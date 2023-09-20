@@ -41,10 +41,10 @@ public class PostController {
 	@Autowired
 	private StorageRepo imageRepository;
 
-	@GetMapping
+	@GetMapping("/posts")
 	public Page<Post> getAllPosts(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "userId") String sortBy) {
-		return postService.find(page, size, sortBy);
+			@RequestParam(defaultValue = "10") int size) {
+		return postService.getAllPostsOrderedByDataCreazione(page, size);
 	}
 
 	@GetMapping("/{postId}")

@@ -23,7 +23,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Posts")
+@Table(name = "post")
 @Data
 @NoArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "postId")
@@ -32,12 +32,11 @@ public class Post {
 	@GeneratedValue
 	@PrimaryKeyJoinColumn
 	private UUID postId;
+	@Column(name = "datacreazione")
 	private LocalDateTime datacreazione;
 	private String description;
 	private String imageUrl;
 	private Integer likeCount;
-	// @Column(name = "user_image")
-	// private ImageData userImage;
 	private String username;
 
 	@Column(name = "user_id")

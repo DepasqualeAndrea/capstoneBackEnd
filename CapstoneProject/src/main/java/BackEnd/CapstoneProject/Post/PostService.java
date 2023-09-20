@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import BackEnd.CapstoneProject.Exception.BadRequestException;
@@ -44,8 +43,6 @@ public class PostService {
 		post.setDatacreazione(LocalDateTime.now());
 		post.setDescription(body.getDescription());
 		post.setImageUrl(body.getImageUrl());
-		// post.setUserImage(userService.getCurrentUser().getImagedata());
-		// post.setUsername(userService.getCurrentUser().getUsername());
 		User user = userService.getCurrentUser();
 		user.getPost().add(post);
 		post = postRepo.save(post);
@@ -68,11 +65,9 @@ public class PostService {
 		}
 	}
 
-	@Transactional
-	public Page<Post> find(int page, int size, String sort) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-
-		return postRepo.findAll(pageable);
+	public Page<Post> getAllPostsOrderedByDataCreazione(int page, int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return postRepo.findAllByOrderByDatacreazioneDesc(pageable);
 	}
 
 	@Transactional

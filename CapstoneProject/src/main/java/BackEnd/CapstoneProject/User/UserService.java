@@ -1,12 +1,13 @@
 package BackEnd.CapstoneProject.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import BackEnd.CapstoneProject.Exception.BadRequestException;
 import BackEnd.CapstoneProject.Exception.NotFoundException;
 import BackEnd.CapstoneProject.Payload.UserRequestPayload;
+import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.Post.PostRepository;
 import BackEnd.CapstoneProject.comments.CommentRepo;
 import BackEnd.CapstoneProject.dbimage.ImageData;
@@ -60,19 +62,23 @@ public class UserService {
 	}
 
 	@Transactional
-	public Page<User> find(int page, int size, String sortBy, String sortDirection) {
-		Sort.Direction direction = Sort.Direction.ASC;
-		if ("desc".equalsIgnoreCase(sortDirection)) {
-			direction = Sort.Direction.DESC;
+	public Page<User> findAllUsersWithPostsOrderedByDataCreazione(Pageable pageable) {
+		Page<Post> postsPage = postRepo.findAllByOrderByDatacreazioneDesc(pageable);
+
+		List<User> usersWithOrderedPosts = new ArrayList<>();
+
+		for (Post post : postsPage.getContent()) {
+			User user = utenteRepo.findById(post.getUserId()).orElse(null);
+			if (user != null) {
+				if (!usersWithOrderedPosts.contains(user)) {
+					user.setPost(new ArrayList<>());
+					usersWithOrderedPosts.add(user);
+				}
+				user.getPost().add(post);
+			}
 		}
 
-		Sort sort = Sort.by(direction, sortBy);
-
-		Pageable pageable = PageRequest.of(page, size, sort);
-
-		Page<User> users = utenteRepo.findAll(pageable);
-
-		return users;
+		return new PageImpl<>(usersWithOrderedPosts, pageable, postsPage.getTotalElements());
 	}
 
 	@Transactional

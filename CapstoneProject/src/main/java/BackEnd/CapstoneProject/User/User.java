@@ -39,7 +39,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "Utenti")
+@Table(name = "utenti")
 @Getter
 @Setter
 @NoArgsConstructor

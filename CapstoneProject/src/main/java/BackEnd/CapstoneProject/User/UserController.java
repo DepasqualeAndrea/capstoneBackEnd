@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,9 +48,9 @@ public class UserController {
 
 	@GetMapping("/feeds")
 	public Page<User> findAllUsersPosts(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "userId") String sortBy,
-			@RequestParam(defaultValue = "desc") String sortDirection) {
-		return userService.find(page, size, sortBy, sortDirection);
+			@RequestParam(defaultValue = "10") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return userService.findAllUsersWithPostsOrderedByDataCreazione(pageable);
 	}
 
 	@GetMapping("/{userId}")
