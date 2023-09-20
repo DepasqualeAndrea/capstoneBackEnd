@@ -44,7 +44,6 @@ public class CommentService {
 		comment.setUserId(userService.getCurrentUser().getUserId());
 		comment.setPostId(body.getPostId());
 		comment.setDataCreazione(LocalDateTime.now());
-		comment.setUsername(userService.getCurrentUser().getUsername());
 		comment.setContent(body.getContent());
 		User user = userService.getCurrentUser();
 		user.getComment().add(comment);

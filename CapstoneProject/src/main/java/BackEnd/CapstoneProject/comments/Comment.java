@@ -21,14 +21,12 @@ public class Comment {
 	@GeneratedValue
 	private UUID commentId;
 	private String content;
-	private String username;
 	private LocalDateTime dataCreazione;
 	private UUID postId;
 	private UUID userId;
 
-	public Comment(LocalDateTime dataCreazione, String username, String content, UUID postId, UUID userId) {
+	public Comment(LocalDateTime dataCreazione, String content, UUID postId, UUID userId) {
 		this.content = content;
-		this.username = username;
 		this.dataCreazione = dataCreazione;
 		this.postId = postId;
 		this.userId = userId;

@@ -37,13 +37,13 @@ public class Post {
 	private String description;
 	private String imageUrl;
 	private Integer likeCount;
-	private String username;
 
 	@Column(name = "user_id")
 	private UUID userId;
 
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Comment> comment = new ArrayList<>();
+
 	@OneToOne(fetch = FetchType.EAGER)
 	private ImageData imagedata;
 
