@@ -1,11 +1,12 @@
 package BackEnd.CapstoneProject.Post;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,10 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
-import BackEnd.CapstoneProject.dbimage.ImageData;
 import BackEnd.CapstoneProject.dbimage.StorageRepo;
 
 @CrossOrigin
@@ -41,10 +40,19 @@ public class PostController {
 	@Autowired
 	private StorageRepo imageRepository;
 
-	@GetMapping("/posts")
-	public Page<Post> getAllPosts(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
-		return postService.getAllPostsOrderedByDataCreazione(page, size);
+	@GetMapping("/home")
+	public Page<Post> getPostsForHomePage() {
+		// Imposta il numero di pagina (0 per la prima pagina) e la dimensione della
+		// pagina desiderata
+		int page = 0;
+		int size = 10; // Sostituisci con la dimensione desiderata
+
+		// Crea un oggetto PageRequest per specificare l'ordinamento per la data di
+		// creazione
+		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "datacreazione"));
+
+		// Recupera i post ordinati per data di creazione
+		return postRepo.findAll(pageRequest);
 	}
 
 	@GetMapping("/{postId}")
@@ -55,34 +63,7 @@ public class PostController {
 
 	@PostMapping("/save")
 	public Post creaPost(@RequestParam("image") MultipartFile image, @ModelAttribute Post body) throws IOException {
-
-		if (image.isEmpty()) {
-			throw new IllegalArgumentException("Le immagini non sono state fornite.");
-		}
-
-		Post post = new Post();
-		post.setUserId(userService.getCurrentUser().getUserId());
-		post.setDatacreazione(LocalDateTime.now());
-		post.setDescription(body.getDescription());
-		post.setImageUrl(body.getImageUrl());
-		User user = userService.getCurrentUser();
-		user.getPost().add(post);
-		post = postRepo.save(post);
-		userRepo.save(user);
-
-		byte[] imageBytes = image.getBytes();
-		String name = image.getName();
-		String type = image.getContentType();
-		ImageData imageData = new ImageData();
-		imageData.setName(name);
-		imageData.setType(type);
-		imageData.setImageData(imageBytes);
-		imageData.setPost(post);
-
-		imageRepository.save(imageData);
-		post.setImagedata(imageData);
-
-		return postService.savePostWithImages(post, imageData);
+		return postService.savePostWithImages(body, image);
 	}
 
 	@PutMapping("/{postId}")

@@ -6,6 +6,7 @@ import java.util.UUID;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.ToString;
 public class Comment {
 	@Id
 	@GeneratedValue
+	@PrimaryKeyJoinColumn
 	private UUID commentId;
 	private String content;
 	private LocalDateTime dataCreazione;

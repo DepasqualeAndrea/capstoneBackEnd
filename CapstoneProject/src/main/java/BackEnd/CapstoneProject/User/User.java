@@ -32,6 +32,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,7 @@ import lombok.ToString;
 public class User implements UserDetails {
 	@Id
 	@GeneratedValue
+	@PrimaryKeyJoinColumn
 	private UUID userId;
 	@Column(nullable = true, unique = false, length = 64)
 	private String nome;

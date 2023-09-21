@@ -1,5 +1,6 @@
 package BackEnd.CapstoneProject.Post;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import BackEnd.CapstoneProject.Exception.BadRequestException;
 import BackEnd.CapstoneProject.Exception.NotFoundException;
@@ -51,18 +53,33 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post savePostWithImages(Post post, ImageData image) {
-		try {
-
-			imageRepo.save(image);
-
-			post.setImagedata(image);
-
-			return postRepo.save(post);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Errore nel salvataggio dell'immagine e dell'utente.");
+	public Post savePostWithImages(Post body, MultipartFile image) throws IOException {
+		if (image.isEmpty()) {
+			throw new IllegalArgumentException("Le immagini non sono state fornite.");
 		}
+
+		Post post = new Post();
+		post.setUserId(userService.getCurrentUser().getUserId());
+		post.setDatacreazione(LocalDateTime.now());
+		post.setDescription(body.getDescription());
+		post.setImageUrl(body.getImageUrl());
+		User user = userService.getCurrentUser();
+		user.getPost().add(post);
+		post = postRepo.save(post);
+		userRepo.save(user);
+
+		byte[] imageBytes = image.getBytes();
+		String name = image.getName();
+		String type = image.getContentType();
+		ImageData imageData = new ImageData();
+		imageData.setName(name);
+		imageData.setType(type);
+		imageData.setImageData(imageBytes);
+		imageData.setPost(post);
+
+		imageRepo.save(imageData);
+		post.setImagedata(imageData);
+		return post;
 	}
 
 	public Page<Post> getAllPostsOrderedByDataCreazione(int page, int size) {
