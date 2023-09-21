@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.comments.Comment;
-import BackEnd.CapstoneProject.dbimage.ImageData;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -33,9 +32,11 @@ public class Post {
 	@PrimaryKeyJoinColumn
 	private UUID postId;
 	@Column(name = "datacreazione")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDateTime datacreazione;
 	private String description;
-	private String imageUrl;
+
+	private String postImageUrl;
 	private Integer likeCount;
 
 	@Column(name = "user_id")
@@ -44,14 +45,10 @@ public class Post {
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Comment> comment = new ArrayList<>();
 
-	@OneToOne(fetch = FetchType.EAGER)
-	private ImageData imagedata;
-
-	public Post(ImageData imagedata, LocalDateTime datacreazione, String description, String imageUrl, UUID userId,
-			String username, String userImage) {
+	public Post(LocalDateTime datacreazione, String description, String postImageUrl, UUID userId) {
 		this.datacreazione = datacreazione;
 		this.description = description;
-		this.imageUrl = imageUrl;
+		this.postImageUrl = postImageUrl;
 		this.userId = userId;
 	}
 

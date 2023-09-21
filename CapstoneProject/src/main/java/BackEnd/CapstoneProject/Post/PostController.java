@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
-import BackEnd.CapstoneProject.dbimage.StorageRepo;
 
 @CrossOrigin
 @RestController
@@ -37,8 +36,6 @@ public class PostController {
 	private PostRepository postRepo;
 	@Autowired
 	private UserRepo userRepo;
-	@Autowired
-	private StorageRepo imageRepository;
 
 	@GetMapping("/home")
 	public Page<Post> getPostsForHomePage() {

@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.comments.Comment;
-import BackEnd.CapstoneProject.dbimage.ImageData;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +30,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -72,15 +70,19 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Ruolo role;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+	private String profileImageUrl;
+
+	private String firebaseUid;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate dataDiNascita;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate dataRegistrazione;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate dataUltimeModifiche;
 
-	@OneToOne(fetch = FetchType.EAGER)
-	private ImageData imagedata;
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
 	private List<Post> post = new ArrayList<>();
 	@OneToMany(fetch = FetchType.EAGER)
@@ -93,14 +95,15 @@ public class User implements UserDetails {
 	@ManyToMany(mappedBy = "followerUsers")
 	private List<User> followingUsers = new ArrayList<>();
 
-	public User(ImageData img, String nome, String cognome, String username, String email, String password, Ruolo role,
-			LocalDate dataRegistrazione) {
+	public User(String nome, String cognome, String username, String email, String password, Ruolo role,
+			LocalDate dataRegistrazione, String firebaseUid) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.role = Ruolo.USER;
+		this.firebaseUid = firebaseUid;
 	}
 
 	@Override
