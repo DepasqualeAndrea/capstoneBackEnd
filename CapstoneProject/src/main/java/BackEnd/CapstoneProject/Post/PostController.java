@@ -42,16 +42,11 @@ public class PostController {
 
 	@GetMapping("/home")
 	public Page<Post> getPostsForHomePage() {
-		// Imposta il numero di pagina (0 per la prima pagina) e la dimensione della
-		// pagina desiderata
 		int page = 0;
-		int size = 10; // Sostituisci con la dimensione desiderata
+		int size = 10;
 
-		// Crea un oggetto PageRequest per specificare l'ordinamento per la data di
-		// creazione
 		PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "datacreazione"));
 
-		// Recupera i post ordinati per data di creazione
 		return postRepo.findAll(pageRequest);
 	}
 
