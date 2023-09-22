@@ -72,8 +72,6 @@ public class User implements UserDetails {
 
 	private String profileImageUrl;
 
-	private String firebaseUid;
-
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate dataDiNascita;
 
@@ -96,14 +94,13 @@ public class User implements UserDetails {
 	private List<User> followingUsers = new ArrayList<>();
 
 	public User(String nome, String cognome, String username, String email, String password, Ruolo role,
-			LocalDate dataRegistrazione, String firebaseUid) {
+			LocalDate dataRegistrazione) {
 		this.nome = nome;
 		this.cognome = cognome;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.role = Ruolo.USER;
-		this.firebaseUid = firebaseUid;
 	}
 
 	@Override

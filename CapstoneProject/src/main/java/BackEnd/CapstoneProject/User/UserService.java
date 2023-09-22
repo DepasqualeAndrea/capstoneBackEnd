@@ -58,8 +58,6 @@ public class UserService {
 		user.setDataRegistrazione(LocalDate.now());
 		user.setProfileImageUrl(imageUrl);
 
-		user.setFirebaseUid(registrationDTO.getFirebaseUid());
-
 		return utenteRepo.save(user);
 	}
 
@@ -106,11 +104,6 @@ public class UserService {
 	public User getUserById(UUID userId) {
 		return utenteRepo.findById(userId)
 				.orElseThrow(() -> new NotFoundException("Utente con id " + userId + " non trovato"));
-	}
-
-	public User findByFirebaseUid(String firebaseUid) {
-
-		return utenteRepo.findByFirebaseUid(firebaseUid);
 	}
 
 	@Transactional
