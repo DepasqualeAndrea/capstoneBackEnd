@@ -2,7 +2,9 @@ package BackEnd.CapstoneProject.Post;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,10 +13,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.comments.Comment;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -34,16 +38,21 @@ public class Post {
 	@Column(name = "datacreazione")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDateTime datacreazione;
+
 	private String description;
 
 	private String postImageUrl;
-	private Integer likeCount;
+	@Column(name = "liked_by_users")
+	@ElementCollection
+	private Set<UUID> likedByUsers = new HashSet<>();
 
-	@Column(name = "user_id")
+	private Integer likeCount = 0;
+
+	@JoinColumn(name = "user_id")
 	private UUID userId;
 
 	@OneToMany(fetch = FetchType.EAGER)
-	private List<Comment> comment = new ArrayList<>();
+	private List<Comment> comments = new ArrayList<>();
 
 	public Post(LocalDateTime datacreazione, String description, String postImageUrl, UUID userId) {
 		this.datacreazione = datacreazione;

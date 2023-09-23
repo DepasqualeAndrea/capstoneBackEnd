@@ -24,7 +24,6 @@ public class UserRequestPayload {
 	private String cognome;
 	@NotNull(message = "Il campo username è obbligatorio")
 	private String username;
-	private byte[] image;
 	@NotNull(message = "Inserisci una email valida, quest campo non può rimanere vuoto")
 	@Email(message = "L'email inserita non è un indirizzo valido")
 	private String email;

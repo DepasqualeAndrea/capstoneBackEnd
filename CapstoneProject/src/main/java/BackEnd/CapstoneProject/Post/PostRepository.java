@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import BackEnd.CapstoneProject.comments.Comment;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
 	Optional<Post> findById(UUID postId);
@@ -18,4 +20,6 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	List<Post> findByUserId(UUID userId);
 
 	Page<Post> findAllByOrderByDatacreazioneDesc(Pageable pageable);
+
+	void deleteByComment(Comment comment);
 }

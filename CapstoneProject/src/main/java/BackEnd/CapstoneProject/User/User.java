@@ -3,7 +3,9 @@ package BackEnd.CapstoneProject.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -81,17 +83,23 @@ public class User implements UserDetails {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate dataUltimeModifiche;
 
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "utenti_post", joinColumns = @JoinColumn(name = "user_user_id"), inverseJoinColumns = @JoinColumn(name = "post_post_id"))
+	private Set<Post> posts = new HashSet<>();
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
 	private List<Post> post = new ArrayList<>();
+
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Comment> comment = new ArrayList<>();
-	@JsonIgnore
+
 	@ManyToMany
-	@JoinTable(name = "follow_users", joinColumns = @JoinColumn(name = "followed_id"), inverseJoinColumns = @JoinColumn(name = "follower_id"))
-	private List<User> followerUsers = new ArrayList<>();
 	@JsonIgnore
-	@ManyToMany(mappedBy = "followerUsers")
-	private List<User> followingUsers = new ArrayList<>();
+	@JoinTable(name = "user_follows", joinColumns = @JoinColumn(name = "follower_id"), inverseJoinColumns = @JoinColumn(name = "following_id"))
+	private Set<User> following = new HashSet<>();
+
+	@ManyToMany(mappedBy = "following")
+	@JsonIgnore
+	private Set<User> followers = new HashSet<>();
 
 	public User(String nome, String cognome, String username, String email, String password, Ruolo role,
 			LocalDate dataRegistrazione) {

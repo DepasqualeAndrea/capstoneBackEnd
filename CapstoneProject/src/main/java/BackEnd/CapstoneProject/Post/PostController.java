@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 
@@ -58,6 +60,24 @@ public class PostController {
 		return postService.savePostWithImages(body, image);
 	}
 
+	@PostMapping("/{postId}/togglelike")
+	public ResponseEntity<String> likeOrUnlikePost(@PathVariable UUID postId) {
+		User currentUser = userService.getCurrentUser();
+		UUID userId = currentUser.getUserId();
+
+		postService.toggleLike(postId, userId);
+
+		String responseMessage;
+
+		if (postService.isUserLikedPost(postId, userId)) {
+			responseMessage = "Hai messo like!";
+		} else {
+			responseMessage = "Hai rimosso like!";
+		}
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
+	}
+
 	@PutMapping("/{postId}")
 	// @PreAuthorize("hasAuthority('ADMIN')")
 	public Post updatePosts(@PathVariable UUID postId, @RequestBody PostPayload body) {
@@ -67,7 +87,7 @@ public class PostController {
 	@DeleteMapping("/{postId}")
 	// @PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<String> deletePost(@PathVariable UUID postId) {
-		postService.findByIdAndDelete(postId);
+		postService.deletePostAndRelatedEntities(postId);
 		return ResponseEntity.ok("Utente eliminato con successo.");
 	}
 }
