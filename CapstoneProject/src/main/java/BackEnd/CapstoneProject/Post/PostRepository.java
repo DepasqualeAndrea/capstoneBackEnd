@@ -21,5 +21,5 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 
 	Page<Post> findAllByOrderByDatacreazioneDesc(Pageable pageable);
 
-	void deleteByComment(Comment comment);
+	void deleteByComments(Comment comments);
 }

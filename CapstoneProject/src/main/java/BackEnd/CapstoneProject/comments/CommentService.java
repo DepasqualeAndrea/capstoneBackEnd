@@ -62,15 +62,18 @@ public class CommentService {
 		Comment parentComment = commentRepo.findById(parentCommentId)
 				.orElseThrow(() -> new NotFoundException("Parent comment not found"));
 
-		User userId = userService.getCurrentUser();
-		UUID userIds = userId.getUserId();
+		User currentUser = userService.getCurrentUser();
+		UUID userId = currentUser.getUserId();
 
-		Comment reply = new Comment(LocalDateTime.now(), body.getContent(), body.getPostId(), userIds);
-		reply.setParentComment(parentComment);
+		Comment reply = new Comment(LocalDateTime.now(), body.getContent(), body.getPostId(), userId);
+		reply.setParentComment(parentComment); // Imposta il commento padre
 		parentComment.getReplies().add(reply);
+		commentRepo.save(reply); // Salva il commento di risposta
+
+		// Ora dovresti anche salvare il commento padre per aggiornare le relazioni
 		commentRepo.save(parentComment);
 
-		return commentRepo.save(reply);
+		return reply;
 	}
 
 	public List<Comment> getAllComments() {
@@ -105,26 +108,6 @@ public class CommentService {
 		ArrayList<Comment> result = new ArrayList<Comment>();
 		result = commentRepo.findAllByPostId(postId);
 		return result;
-	}
-
-	@Transactional
-	public void deleteCommentAndReplies(UUID commentId) throws NotFoundException {
-		Comment comment = commentRepo.findById(commentId).orElseThrow(() -> new NotFoundException("Comment not found"));
-
-		// Elimina prima tutte le associazioni in utenti_comment
-		userRepo.deleteByComment(comment);
-
-		// Elimina prima tutte le risposte associate a questo commento
-		List<Comment> replies = comment.getReplies();
-		for (Comment reply : replies) {
-			// Rimuovi il riferimento dal commento principale
-			comment.getReplies().remove(reply);
-			// Elimina la risposta
-			commentRepo.delete(reply);
-		}
-
-		// Infine, elimina il commento principale
-		commentRepo.delete(comment);
 	}
 
 }

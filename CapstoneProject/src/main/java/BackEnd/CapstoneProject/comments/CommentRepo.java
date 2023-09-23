@@ -12,4 +12,6 @@ public interface CommentRepo extends JpaRepository<Comment, UUID> {
 
 	List<Comment> findByUserId(UUID userId);
 
+	List<Comment> findAllByParentComment_CommentId(UUID parentCommentId);
+
 }

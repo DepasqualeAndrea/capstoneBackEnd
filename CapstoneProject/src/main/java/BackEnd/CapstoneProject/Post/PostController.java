@@ -88,6 +88,6 @@ public class PostController {
 	// @PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<String> deletePost(@PathVariable UUID postId) {
 		postService.deletePostAndRelatedEntities(postId);
-		return ResponseEntity.ok("Utente eliminato con successo.");
+		return ResponseEntity.ok("Post eliminato con successo.");
 	}
 }

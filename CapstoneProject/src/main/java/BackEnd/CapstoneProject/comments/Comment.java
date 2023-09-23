@@ -18,13 +18,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Table(name = "Commenti")
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
+@Data
 @ToString
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "commentId")
 public class Comment {
@@ -50,5 +54,4 @@ public class Comment {
 		this.postId = postId;
 		this.userId = userId;
 	}
-
 }

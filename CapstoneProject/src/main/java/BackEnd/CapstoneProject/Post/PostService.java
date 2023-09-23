@@ -2,7 +2,9 @@ package BackEnd.CapstoneProject.Post;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ import BackEnd.CapstoneProject.Exception.PostNotFoundException;
 import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
+import BackEnd.CapstoneProject.comments.Comment;
 import BackEnd.CapstoneProject.comments.CommentRepo;
 import BackEnd.CapstoneProject.comments.CommentService;
 import jakarta.transaction.Transactional;
@@ -64,7 +67,7 @@ public class PostService {
 		if (user == null || user.getUserId() == null) {
 			throw new IllegalStateException("L'utente corrente non è valido o manca l'ID dell'utente.");
 		}
-		user.getPost().add(post);
+		user.getPosts().add(post);
 		post = postRepo.save(post);
 		userRepo.save(user);
 		return post;
@@ -115,62 +118,77 @@ public class PostService {
 		return postRepo.save(found);
 	}
 
-//	@Transactional
-//	public void deletePostAndRelatedEntities(UUID postId) throws NotFoundException {
-//		Post post = this.findById(postId);
-//
-//		// Trova tutti gli utenti associati a questo post
-//		List<User> usersAssociatedWithPost = userRepo.findByPostsPostId(postId);
-//
-//		// Rimuovi l'associazione tra gli utenti e il post dalla tabella "utenti_post"
-//		for (User user : usersAssociatedWithPost) {
-//			user.getPost().remove(post);
-//			userRepo.save(user);
-//		}
-//
-//		// Elimina i like associati al post
-//		post.setLikedByUsers(new HashSet<>()); // Rimuovi tutti i like
-//		post.setLikeCount(0);
-//
-//		// Elimina i commenti associati al post (e le relative replies)
-//		for (Comment comment : post.getComments()) {
-//			commentService.deleteCommentAndReplies(comment.getCommentId());
-//		}
-//
-//		// Infine, elimina il post stesso
-//		postRepo.delete(post);
-//	}
+	@Transactional
+	public void deletePostAndRelatedEntities(UUID postId) throws NotFoundException {
+		Post post = this.findById(postId);
 
-//	@Transactional
-//	public void deleteCommentAndReplies(UUID commentId) throws NotFoundException {
-//		Comment comment = commentRepo.findById(commentId).orElseThrow(() -> new NotFoundException("Comment not found"));
-//
-//		// Elimina le risposte associate a questo commento
-//		for (Comment reply : comment.getReplies()) {
-//			// Chiamata per eliminare le associazioni nella tabella "post_comments"
-//			deletePostCommentRelationships(reply);
-//			commentRepo.delete(reply);
-//		}
-//
-//		// Infine, elimina il commento stesso
-//		// Chiamata per eliminare le associazioni nella tabella "post_comments"
-//		deletePostCommentRelationships(comment);
-//		commentRepo.delete(comment);
-//	}
+		// Trova tutti gli utenti associati a questo post e rimuovi l'associazione
+		List<User> usersAssociatedWithPost = userRepo.findByPostsPostId(postId);
+		for (User user : usersAssociatedWithPost) {
+			user.getPosts().remove(post);
+			userRepo.save(user);
+		}
 
-//	private void deletePostCommentRelationships(Comment comment) {
-//	    // Supponiamo che tu abbia una tabella "post_comments" con due colonne: "comment_id" e "post_id".
-//	    // Qui stiamo cercando di eliminare tutte le righe in cui "comment_id" corrisponde all'ID del commento fornito.
-//
-//	    // Prima creiamo una query per eliminare le righe da "post_comments" con il commento fornito.
-//	    Query deleteQuery = entityManager.createQuery("DELETE FROM PostComment pc WHERE pc.commentId = :commentId");
-//	    deleteQuery.setParameter("commentId", comment.getCommentId());
-//
-//	    // Esegui la query per eliminare le righe.
-//	    int rowsAffected = deleteQuery.executeUpdate();
-//	    
-//	    // Puoi controllare il numero di righe eliminate, se necessario.
-//	    System.out.println("Numero di righe eliminate da post_comments: " + rowsAffected);
-//	}
+		// Elimina i like associati al post
+		post.setLikedByUsers(new HashSet<>());
+		post.setLikeCount(0);
+
+		// Elimina i commenti associati al post (e le relative replies)
+		deleteCommentsAndReplies(post.getComments());
+
+		// Infine, elimina il post stesso
+		postRepo.delete(post);
+	}
+
+	private void deleteCommentsAndReplies(List<Comment> comments) {
+		List<Comment> commentsToDelete = new ArrayList<>(comments);
+
+		for (Comment comment : commentsToDelete) {
+			// Rimuovi l'associazione con la tabella "utenti_comment"
+			removeUserCommentAssociation(comment);
+
+			// Elimina ricorsivamente le risposte e le associazioni
+			deleteRepliesAndAssociations(comment);
+
+			// Rimuovi l'associazione con la tabella "post_comments" per questo commento
+			deletePostCommentRelationships(comment);
+
+			// Rimuovi il commento dalla lista originale
+			comments.remove(comment);
+		}
+
+		// Elimina i commenti dal repository
+		commentRepo.deleteAll(commentsToDelete);
+	}
+
+	private void removeUserCommentAssociation(Comment comment) {
+		UUID userId = comment.getUserId();
+		if (userId != null) {
+			User user = userRepo.findById(userId).orElse(null);
+			if (user != null) {
+				user.getComment().remove(comment);
+				userRepo.save(user);
+			}
+		}
+	}
+
+	private void deleteRepliesAndAssociations(Comment comment) {
+		List<Comment> replies = new ArrayList<>(comment.getReplies());
+		for (Comment reply : replies) {
+			deleteRepliesAndAssociations(reply);
+			commentRepo.delete(reply);
+		}
+	}
+
+	private void deletePostCommentRelationships(Comment comment) {
+		UUID postId = comment.getPostId();
+		if (postId != null) {
+			Post post = postRepo.findById(postId).orElse(null);
+			if (post != null) {
+				post.getComments().remove(comment);
+				postRepo.save(post);
+			}
+		}
+	}
 
 }

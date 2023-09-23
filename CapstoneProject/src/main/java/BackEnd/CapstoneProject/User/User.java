@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.comments.Comment;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -86,8 +85,6 @@ public class User implements UserDetails {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "utenti_post", joinColumns = @JoinColumn(name = "user_user_id"), inverseJoinColumns = @JoinColumn(name = "post_post_id"))
 	private Set<Post> posts = new HashSet<>();
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-	private List<Post> post = new ArrayList<>();
 
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Comment> comment = new ArrayList<>();
