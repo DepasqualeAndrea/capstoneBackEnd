@@ -12,10 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.comments.Comment;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -48,10 +48,10 @@ public class Post {
 
 	private Integer likeCount = 0;
 
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "userId")
 	private UUID userId;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	private List<Comment> comments = new ArrayList<>();
 
 	public Post(LocalDateTime datacreazione, String description, String postImageUrl, UUID userId) {

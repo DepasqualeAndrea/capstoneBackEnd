@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import BackEnd.CapstoneProject.comments.Comment;
@@ -22,4 +23,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 	Page<Post> findAllByOrderByDatacreazioneDesc(Pageable pageable);
 
 	void deleteByComments(Comment comments);
+
+	@Query("SELECT COUNT(c) FROM Comment c WHERE c.commentId = :commentId")
+	Long countCommentsByCommentId(UUID commentId);
 }

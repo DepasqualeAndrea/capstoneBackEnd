@@ -152,13 +152,11 @@ public class PostService {
 	}
 
 	private void removeUserCommentAssociation(Comment comment) {
-		UUID userId = comment.getUserId();
-		if (userId != null) {
-			User user = userRepo.findById(userId).orElse(null);
-			if (user != null) {
-				user.getComment().remove(comment);
-				userRepo.save(user);
-			}
+		User user = comment.getUser();
+		if (user != null) {
+			UUID userId = user.getUserId();
+			user.getComment().remove(comment);
+			userRepo.save(user);
 		}
 	}
 
@@ -171,13 +169,11 @@ public class PostService {
 	}
 
 	private void deletePostCommentRelationships(Comment comment) {
-		UUID postId = comment.getPostId();
-		if (postId != null) {
-			Post post = postRepo.findById(postId).orElse(null);
-			if (post != null) {
-				post.getComments().remove(comment);
-				postRepo.save(post);
-			}
+		Post post = comment.getPost();
+		if (post != null) {
+			UUID postId = post.getPostId();
+			post.getComments().remove(comment);
+			postRepo.save(post);
 		}
 	}
 

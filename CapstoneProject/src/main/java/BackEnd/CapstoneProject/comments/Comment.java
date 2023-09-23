@@ -8,6 +8,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import BackEnd.CapstoneProject.Post.Post;
+import BackEnd.CapstoneProject.User.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,8 +40,14 @@ public class Comment {
 	private UUID commentId;
 	private String content;
 	private LocalDateTime dataCreazione;
-	private UUID postId;
-	private UUID userId;
+
+	@ManyToOne
+	@JoinColumn(name = "post_id")
+	private Post post;
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
 	@ManyToOne
 	@JoinColumn(name = "parent_comment_id")
@@ -51,7 +59,6 @@ public class Comment {
 	public Comment(LocalDateTime dataCreazione, String content, UUID postId, UUID userId) {
 		this.content = content;
 		this.dataCreazione = dataCreazione;
-		this.postId = postId;
-		this.userId = userId;
+
 	}
 }

@@ -44,28 +44,47 @@ public class CommentService {
 
 	@Transactional
 	public Comment salvaCommento(CommentPayload body) {
+		
 		Post post = ps.findById(body.getPostId());
+
+	
+		User user = userService.getCurrentUser();
+
+	
 		Comment comment = new Comment();
-		comment.setUserId(userService.getCurrentUser().getUserId());
-		comment.setPostId(body.getPostId());
+		comment.setUser(user);
+		comment.setPost(post);
 		comment.setDataCreazione(LocalDateTime.now());
 		comment.setContent(body.getContent());
-		User user = userService.getCurrentUser();
+
+	
 		user.getComment().add(comment);
 		post.getComments().add(comment);
+
+	
 		comment = commentRepo.save(comment);
+
+	
 		userRepo.save(user);
+
+		// 7. Restituisci il commento salvato
 		return comment;
 	}
 
 	public Comment createReply(UUID parentCommentId, CommentPayload body) {
 		Comment parentComment = commentRepo.findById(parentCommentId)
 				.orElseThrow(() -> new NotFoundException("Parent comment not found"));
+		
+		Post post = ps.findById(body.getPostId());
 
 		User currentUser = userService.getCurrentUser();
 		UUID userId = currentUser.getUserId();
 
-		Comment reply = new Comment(LocalDateTime.now(), body.getContent(), body.getPostId(), userId);
+		Comment reply = new Comment();
+		reply.setPost(post);
+		reply.setContent(body.getContent());
+		reply.setDataCreazione(LocalDateTime.now());
+		reply.setUser(currentUser);
 		reply.setParentComment(parentComment);
 		parentComment.getReplies().add(reply);
 		commentRepo.save(reply);
@@ -77,6 +96,12 @@ public class CommentService {
 
 	public List<Comment> getAllComments() {
 		return commentRepo.findAll();
+	}
+
+	public ArrayList<Comment> getAllComment(UUID postId) {
+		ArrayList<Comment> result = new ArrayList<Comment>();
+		result = (ArrayList<Comment>) commentRepo.findAllByPostId(postId);
+		return result;
 	}
 
 	public Comment getCommentById(UUID commentId) {
@@ -98,15 +123,15 @@ public class CommentService {
 		return commentRepo.save(found);
 	}
 
-	public void findByIdAndDelete(UUID id) throws NotFoundException {
-		Comment found = this.findById(id);
-		commentRepo.delete(found);
-	}
-
-	public ArrayList<Comment> getAllComment(UUID postId) {
-		ArrayList<Comment> result = new ArrayList<Comment>();
-		result = commentRepo.findAllByPostId(postId);
-		return result;
+	public void deleteCommentById(UUID commentId) {
+		// Verifica se il commento esiste
+		if (commentRepo.existsById(commentId)) {
+			// Se esiste, elimina il commento utilizzando l'ID
+			commentRepo.deleteById(commentId);
+		} else {
+			// Gestisci il caso in cui il commento non esista
+			throw new NotFoundException("Comment with ID " + commentId + " not found");
+		}
 	}
 
 }
