@@ -79,7 +79,6 @@ public class PostController {
 	}
 
 	@PutMapping("/{postId}")
-	// @PreAuthorize("hasAuthority('ADMIN')")
 	public Post updatePosts(@PathVariable UUID postId, @RequestBody PostPayload body) {
 		return postService.findByIdAndUpdate(postId, body);
 	}

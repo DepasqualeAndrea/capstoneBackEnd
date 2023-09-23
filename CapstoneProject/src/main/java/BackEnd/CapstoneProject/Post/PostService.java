@@ -122,21 +122,17 @@ public class PostService {
 	public void deletePostAndRelatedEntities(UUID postId) throws NotFoundException {
 		Post post = this.findById(postId);
 
-		// Trova tutti gli utenti associati a questo post e rimuovi l'associazione
 		List<User> usersAssociatedWithPost = userRepo.findByPostsPostId(postId);
 		for (User user : usersAssociatedWithPost) {
 			user.getPosts().remove(post);
 			userRepo.save(user);
 		}
 
-		// Elimina i like associati al post
 		post.setLikedByUsers(new HashSet<>());
 		post.setLikeCount(0);
 
-		// Elimina i commenti associati al post (e le relative replies)
 		deleteCommentsAndReplies(post.getComments());
 
-		// Infine, elimina il post stesso
 		postRepo.delete(post);
 	}
 
@@ -144,20 +140,14 @@ public class PostService {
 		List<Comment> commentsToDelete = new ArrayList<>(comments);
 
 		for (Comment comment : commentsToDelete) {
-			// Rimuovi l'associazione con la tabella "utenti_comment"
 			removeUserCommentAssociation(comment);
 
-			// Elimina ricorsivamente le risposte e le associazioni
 			deleteRepliesAndAssociations(comment);
-
-			// Rimuovi l'associazione con la tabella "post_comments" per questo commento
 			deletePostCommentRelationships(comment);
 
-			// Rimuovi il commento dalla lista originale
 			comments.remove(comment);
 		}
 
-		// Elimina i commenti dal repository
 		commentRepo.deleteAll(commentsToDelete);
 	}
 

@@ -66,11 +66,10 @@ public class CommentService {
 		UUID userId = currentUser.getUserId();
 
 		Comment reply = new Comment(LocalDateTime.now(), body.getContent(), body.getPostId(), userId);
-		reply.setParentComment(parentComment); // Imposta il commento padre
+		reply.setParentComment(parentComment);
 		parentComment.getReplies().add(reply);
-		commentRepo.save(reply); // Salva il commento di risposta
+		commentRepo.save(reply);
 
-		// Ora dovresti anche salvare il commento padre per aggiornare le relazioni
 		commentRepo.save(parentComment);
 
 		return reply;
