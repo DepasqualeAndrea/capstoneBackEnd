@@ -86,7 +86,7 @@ public class PostController {
 	@DeleteMapping("/{postId}")
 	// @PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<String> deletePost(@PathVariable UUID postId) {
-		postService.deletePostAndRelatedEntities(postId);
+		postService.deletePost(postId);
 		return ResponseEntity.ok("Post eliminato con successo.");
 	}
 }

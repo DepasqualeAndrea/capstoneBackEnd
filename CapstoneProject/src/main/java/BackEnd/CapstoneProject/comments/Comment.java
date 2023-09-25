@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.Post.Post;
@@ -40,6 +41,7 @@ public class Comment {
 	private UUID commentId;
 	private String content;
 	private LocalDateTime dataCreazione;
+	private UUID usercommentId;
 
 	@ManyToOne
 	@JoinColumn(name = "post_id")
@@ -47,6 +49,7 @@ public class Comment {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonIgnore
 	private User user;
 
 	@ManyToOne

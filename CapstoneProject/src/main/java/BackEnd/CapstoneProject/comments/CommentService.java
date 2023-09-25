@@ -44,47 +44,40 @@ public class CommentService {
 
 	@Transactional
 	public Comment salvaCommento(CommentPayload body) {
-		
+
 		Post post = ps.findById(body.getPostId());
 
-	
 		User user = userService.getCurrentUser();
 
-	
 		Comment comment = new Comment();
-		comment.setUser(user);
+		comment.setUsercommentId(user.getUserId());
 		comment.setPost(post);
 		comment.setDataCreazione(LocalDateTime.now());
 		comment.setContent(body.getContent());
 
-	
 		user.getComment().add(comment);
 		post.getComments().add(comment);
 
-	
 		comment = commentRepo.save(comment);
 
-	
 		userRepo.save(user);
 
-		// 7. Restituisci il commento salvato
 		return comment;
 	}
 
 	public Comment createReply(UUID parentCommentId, CommentPayload body) {
 		Comment parentComment = commentRepo.findById(parentCommentId)
 				.orElseThrow(() -> new NotFoundException("Parent comment not found"));
-		
-		Post post = ps.findById(body.getPostId());
 
-		User currentUser = userService.getCurrentUser();
-		UUID userId = currentUser.getUserId();
+		Post post = ps.findById(body.getPostId());
+		User user = userService.getCurrentUser();
+		UUID userId = user.getUserId();
 
 		Comment reply = new Comment();
 		reply.setPost(post);
 		reply.setContent(body.getContent());
 		reply.setDataCreazione(LocalDateTime.now());
-		reply.setUser(currentUser);
+		reply.setUsercommentId(userId);
 		reply.setParentComment(parentComment);
 		parentComment.getReplies().add(reply);
 		commentRepo.save(reply);
@@ -94,14 +87,54 @@ public class CommentService {
 		return reply;
 	}
 
-	public List<Comment> getAllComments() {
-		return commentRepo.findAll();
-	}
+	public List<CommentDTO> getAllFilteredCommentsAndByPost(UUID postId) {
+		List<Comment> comments = commentRepo.findAllByPostId(postId);
+		List<CommentDTO> filteredComments = new ArrayList<>();
 
-	public ArrayList<Comment> getAllComment(UUID postId) {
-		ArrayList<Comment> result = new ArrayList<Comment>();
-		result = (ArrayList<Comment>) commentRepo.findAllByPostId(postId);
-		return result;
+		for (Comment comment : comments) {
+			if (comment.getCommentId() != null || comment.getParentComment() == null) {
+				CommentDTO commentDTO = new CommentDTO();
+				commentDTO.setCommentId(comment.getCommentId());
+				commentDTO.setContent(comment.getContent());
+				commentDTO.setDataCreazione(comment.getDataCreazione());
+				commentDTO.setUsercommentId(comment.getUsercommentId());
+				commentDTO.setPostId(comment.getPost().getPostId());
+
+				// Aggiungi solo le informazioni necessarie delle risposte
+				List<Comment> replies = comment.getReplies();
+				List<CommentDTO> replyDTOs = new ArrayList<>();
+				for (Comment reply : replies) {
+					CommentDTO replyDTO = new CommentDTO();
+					replyDTO.setCommentId(reply.getCommentId());
+					replyDTO.setContent(reply.getContent());
+					replyDTO.setDataCreazione(reply.getDataCreazione());
+					replyDTO.setUsercommentId(reply.getUsercommentId());
+					replyDTO.setPostId(reply.getPost().getPostId());
+
+					// Aggiungi le risposte alle risposte se presenti
+					List<Comment> replyReplies = reply.getReplies();
+					List<CommentDTO> replyReplyDTOs = new ArrayList<>();
+					for (Comment replyReply : replyReplies) {
+						CommentDTO replyReplyDTO = new CommentDTO();
+						replyReplyDTO.setCommentId(replyReply.getCommentId());
+						replyReplyDTO.setContent(replyReply.getContent());
+						replyReplyDTO.setDataCreazione(replyReply.getDataCreazione());
+						replyReplyDTO.setUsercommentId(replyReply.getUsercommentId());
+						replyReplyDTO.setPostId(replyReply.getPost().getPostId());
+
+						replyReplyDTOs.add(replyReplyDTO);
+					}
+					replyDTO.setReplies(replyReplyDTOs);
+
+					replyDTOs.add(replyDTO);
+				}
+				commentDTO.setReplies(replyDTOs);
+
+				filteredComments.add(commentDTO);
+			}
+		}
+
+		return filteredComments;
 	}
 
 	public Comment getCommentById(UUID commentId) {
@@ -124,12 +157,12 @@ public class CommentService {
 	}
 
 	public void deleteCommentById(UUID commentId) {
-		// Verifica se il commento esiste
+
 		if (commentRepo.existsById(commentId)) {
-			// Se esiste, elimina il commento utilizzando l'ID
+
 			commentRepo.deleteById(commentId);
 		} else {
-			// Gestisci il caso in cui il commento non esista
+
 			throw new NotFoundException("Comment with ID " + commentId + " not found");
 		}
 	}

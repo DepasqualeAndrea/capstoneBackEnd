@@ -119,38 +119,6 @@ public class PostService {
 	}
 
 	@Transactional
-	public void deletePostAndRelatedEntities(UUID postId) throws NotFoundException {
-		Post post = this.findById(postId);
-
-		List<User> usersAssociatedWithPost = userRepo.findByPostsPostId(postId);
-		for (User user : usersAssociatedWithPost) {
-			user.getPosts().remove(post);
-			userRepo.save(user);
-		}
-
-		post.setLikedByUsers(new HashSet<>());
-		post.setLikeCount(0);
-
-		deleteCommentsAndReplies(post.getComments());
-
-		postRepo.delete(post);
-	}
-
-	private void deleteCommentsAndReplies(List<Comment> comments) {
-		List<Comment> commentsToDelete = new ArrayList<>(comments);
-
-		for (Comment comment : commentsToDelete) {
-			removeUserCommentAssociation(comment);
-
-			deleteRepliesAndAssociations(comment);
-			deletePostCommentRelationships(comment);
-
-			comments.remove(comment);
-		}
-
-		commentRepo.deleteAll(commentsToDelete);
-	}
-
 	private void removeUserCommentAssociation(Comment comment) {
 		User user = comment.getUser();
 		if (user != null) {
@@ -160,6 +128,7 @@ public class PostService {
 		}
 	}
 
+	@Transactional
 	private void deleteRepliesAndAssociations(Comment comment) {
 		List<Comment> replies = new ArrayList<>(comment.getReplies());
 		for (Comment reply : replies) {
@@ -168,12 +137,27 @@ public class PostService {
 		}
 	}
 
-	private void deletePostCommentRelationships(Comment comment) {
-		Post post = comment.getPost();
+	@Transactional
+	public void deletePost(UUID postId) {
+		Post post = postRepo.findById(postId).orElse(null);
+
 		if (post != null) {
-			UUID postId = post.getPostId();
-			post.getComments().remove(comment);
-			postRepo.save(post);
+			UUID userId = post.getUserId();
+
+			User user = userRepo.findById(userId).orElse(null);
+			if (user != null) {
+				user.getPosts().remove(post);
+				userRepo.save(user);
+			}
+
+			List<Comment> comments = commentRepo.findByPost(post);
+
+			for (Comment comment : comments) {
+				removeUserCommentAssociation(comment);
+				deleteRepliesAndAssociations(comment);
+			}
+
+			postRepo.delete(post);
 		}
 	}
 

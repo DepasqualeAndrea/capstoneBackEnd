@@ -1,6 +1,5 @@
 package BackEnd.CapstoneProject.comments;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,12 +35,6 @@ public class CommentController {
 		return new ResponseEntity<>(reply, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/")
-	public ResponseEntity<List<Comment>> getAllComments() {
-		List<Comment> comments = commentService.getAllComments();
-		return new ResponseEntity<>(comments, HttpStatus.OK);
-	}
-
 	@GetMapping("/{commentId}")
 	public ResponseEntity<Comment> getCommentById(@PathVariable UUID commentId) {
 		Comment comment = commentService.getCommentById(commentId);
@@ -49,8 +42,9 @@ public class CommentController {
 	}
 
 	@GetMapping("/getAllComments/{postId}")
-	public ArrayList<Comment> getCommentsByPostId(@PathVariable("postId") UUID postId) {
-		return commentService.getAllComment(postId);
+	public List<CommentDTO> getCommentsByPostId(@PathVariable("postId") UUID postId) {
+		List<CommentDTO> comments = commentService.getAllFilteredCommentsAndByPost(postId);
+		return comments;
 	}
 
 	@DeleteMapping("/{commentId}")

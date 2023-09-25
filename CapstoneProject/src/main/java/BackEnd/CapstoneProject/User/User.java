@@ -88,6 +88,7 @@ public class User implements UserDetails {
 	private Set<Post> posts = new HashSet<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Comment> comment = new ArrayList<>();
 
 	@ManyToMany

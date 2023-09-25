@@ -16,5 +16,6 @@ public class CommentPayload {
 	private String username;
 	private Date timestamp;
 	private UUID postId;
+	private UUID usercommentId;
 
 }
