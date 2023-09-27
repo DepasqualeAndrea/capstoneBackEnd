@@ -21,6 +21,8 @@ import BackEnd.CapstoneProject.Post.PostService;
 import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
+import BackEnd.CapstoneProject.reply.Reply;
+import BackEnd.CapstoneProject.reply.ReplyDTO;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -65,74 +67,35 @@ public class CommentService {
 		return comment;
 	}
 
-	public Comment createReply(UUID parentCommentId, CommentPayload body) {
-		Comment parentComment = commentRepo.findById(parentCommentId)
-				.orElseThrow(() -> new NotFoundException("Parent comment not found"));
-
-		Post post = ps.findById(body.getPostId());
-		User user = userService.getCurrentUser();
-		UUID userId = user.getUserId();
-
-		Comment reply = new Comment();
-		reply.setRepliesId(UUID.randomUUID());
-		reply.setPost(post);
-		reply.setContent(body.getContent());
-		reply.setDataCreazione(LocalDateTime.now());
-		reply.setUsercommentId(userId);
-		reply.setParentComment(parentComment);
-		parentComment.getReplies().add(reply);
-		commentRepo.save(reply);
-
-		commentRepo.save(parentComment);
-
-		return reply;
-	}
-
-	public List<CommentDTO> getAllFilteredCommentsAndByPost(UUID postId) {
+	@Transactional
+	public List<CommentDTO> getAllFilteredCommentsByPost(UUID postId) {
 		List<Comment> comments = commentRepo.findAllByPostId(postId);
 		List<CommentDTO> filteredComments = new ArrayList<>();
 
 		for (Comment comment : comments) {
-			if (comment.getCommentId() != null || comment.getParentComment() == null) {
-				CommentDTO commentDTO = new CommentDTO();
-				commentDTO.setCommentId(comment.getCommentId());
-				commentDTO.setContent(comment.getContent());
-				commentDTO.setDataCreazione(comment.getDataCreazione());
-				commentDTO.setUsercommentId(comment.getUsercommentId());
-				commentDTO.setPostId(comment.getPost().getPostId());
+			// Forza il caricamento delle risposte
+			comment.getReplies().size();
 
-				// Aggiungi solo le informazioni necessarie delle risposte
-				List<Comment> replies = comment.getReplies();
-				List<CommentDTO> replyDTOs = new ArrayList<>();
-				for (Comment reply : replies) {
-					CommentDTO replyDTO = new CommentDTO();
-					replyDTO.setCommentId(reply.getCommentId());
-					replyDTO.setContent(reply.getContent());
-					replyDTO.setDataCreazione(reply.getDataCreazione());
-					replyDTO.setUsercommentId(reply.getUsercommentId());
-					replyDTO.setPostId(reply.getPost().getPostId());
+			CommentDTO commentDTO = new CommentDTO();
+			commentDTO.setCommentId(comment.getCommentId());
+			commentDTO.setContent(comment.getContent());
+			commentDTO.setDataCreazione(comment.getDataCreazione());
+			commentDTO.setUsercommentId(comment.getUsercommentId());
+			commentDTO.setPostId(comment.getPost().getPostId());
 
-					// Aggiungi le risposte alle risposte se presenti
-					List<Comment> replyReplies = reply.getReplies();
-					List<CommentDTO> replyReplyDTOs = new ArrayList<>();
-					for (Comment replyReply : replyReplies) {
-						CommentDTO replyReplyDTO = new CommentDTO();
-						replyReplyDTO.setCommentId(replyReply.getCommentId());
-						replyReplyDTO.setContent(replyReply.getContent());
-						replyReplyDTO.setDataCreazione(replyReply.getDataCreazione());
-						replyReplyDTO.setUsercommentId(replyReply.getUsercommentId());
-						replyReplyDTO.setPostId(replyReply.getPost().getPostId());
-
-						replyReplyDTOs.add(replyReplyDTO);
-					}
-					replyDTO.setReplies(replyReplyDTOs);
-
-					replyDTOs.add(replyDTO);
-				}
-				commentDTO.setReplies(replyDTOs);
-
-				filteredComments.add(commentDTO);
+			// Aggiungi le risposte al commento DTO
+			List<ReplyDTO> replyDTOs = new ArrayList<>();
+			for (Reply reply : comment.getReplies()) {
+				ReplyDTO replyDTO = new ReplyDTO();
+				replyDTO.setContent(reply.getContent());
+				replyDTO.setDataCreazione(reply.getDataCreazione());
+				replyDTO.setReplyId(reply.getRepliesId());
+				replyDTO.setUserReplyId(reply.getUsercommentId());
+				replyDTOs.add(replyDTO);
 			}
+			commentDTO.setReplies(replyDTOs);
+
+			filteredComments.add(commentDTO);
 		}
 
 		return filteredComments;
@@ -144,7 +107,6 @@ public class CommentService {
 
 	public Page<Comment> find(int page, int size, String sort) {
 		Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-
 		return commentRepo.findAll(pageable);
 	}
 

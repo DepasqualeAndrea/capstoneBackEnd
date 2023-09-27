@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.User.User;
+import BackEnd.CapstoneProject.reply.Reply;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -40,7 +41,6 @@ public class Comment {
 	@GeneratedValue
 	@PrimaryKeyJoinColumn
 	private UUID commentId;
-	private UUID repliesId;
 	private String content;
 	private LocalDateTime dataCreazione;
 	private UUID usercommentId;
@@ -54,17 +54,11 @@ public class Comment {
 	@JsonIgnore
 	private User user;
 
-	@ManyToOne
-	@JoinColumn(name = "parent_comment_id")
-	private Comment parentComment;
-
-	@OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
-	@JsonAlias("replies")
-	private List<Comment> replies = new ArrayList<>();
+	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Reply> replies = new ArrayList<>();
 
 	public Comment(LocalDateTime dataCreazione, String content, UUID postId, UUID userId) {
 		this.content = content;
 		this.dataCreazione = dataCreazione;
-
 	}
 }

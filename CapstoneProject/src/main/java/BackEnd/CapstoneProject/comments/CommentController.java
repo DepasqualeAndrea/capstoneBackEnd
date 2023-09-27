@@ -24,27 +24,22 @@ public class CommentController {
 	CommentRepo commentRepo;
 
 	@PostMapping("/{postId}/create")
-	public ResponseEntity<Comment> createComment(@PathVariable UUID postId, @RequestBody CommentPayload body) {
+	public ResponseEntity<String> createComment(@PathVariable UUID postId, @RequestBody CommentPayload body) {
 		Comment comment = commentService.salvaCommento(postId, body);
-		return new ResponseEntity<>(comment, HttpStatus.CREATED);
+		String successMessage = "Commento creato con successo";
+		return ResponseEntity.status(HttpStatus.CREATED).body(successMessage);
 	}
 
-	@PostMapping("/{parentCommentId}/reply")
-	public ResponseEntity<Comment> createReply(@PathVariable UUID parentCommentId, @RequestBody CommentPayload body) {
-		Comment reply = commentService.createReply(parentCommentId, body);
-		return new ResponseEntity<>(reply, HttpStatus.CREATED);
+	@GetMapping("/getAllComments/{postId}")
+	public List<CommentDTO> getCommentsByPostId(@PathVariable("postId") UUID postId) {
+		List<CommentDTO> comments = commentService.getAllFilteredCommentsByPost(postId);
+		return comments;
 	}
 
 	@GetMapping("/{commentId}")
 	public ResponseEntity<Comment> getCommentById(@PathVariable UUID commentId) {
 		Comment comment = commentService.getCommentById(commentId);
 		return new ResponseEntity<>(comment, HttpStatus.OK);
-	}
-
-	@GetMapping("/getAllComments/{postId}")
-	public List<CommentDTO> getCommentsByPostId(@PathVariable("postId") UUID postId) {
-		List<CommentDTO> comments = commentService.getAllFilteredCommentsAndByPost(postId);
-		return comments;
 	}
 
 	@DeleteMapping("/{commentId}")

@@ -6,10 +6,12 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.User.User;
 
+@Repository
 public interface CommentRepo extends JpaRepository<Comment, UUID> {
 
 	@Query("SELECT c FROM Comment c WHERE c.commentId = :commentId")
@@ -27,12 +29,7 @@ public interface CommentRepo extends JpaRepository<Comment, UUID> {
 	@Query("SELECT c FROM Comment c WHERE c.user.id = :userId")
 	List<Comment> findCommentsByUserId(@Param("userId") UUID userId);
 
-//	@Query("SELECT c FROM Comment c WHERE c.post.postId = :postId")
-//	List<Comment> findByPost(@Param("postId") UUID postId);
-
 	List<Comment> findByPost(Post post);
-
-	List<Comment> findAllByParentComment_CommentId(UUID parentCommentId);
 
 	Comment deleteCommentByCommentId(UUID commentId);
 

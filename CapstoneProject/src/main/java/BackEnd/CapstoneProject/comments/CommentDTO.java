@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import BackEnd.CapstoneProject.reply.ReplyDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,6 @@ public class CommentDTO {
 	private String content;
 	private LocalDateTime dataCreazione;
 	private UUID usercommentId;
-	private List<CommentDTO> replies;
+	private List<ReplyDTO> replies; // Cambia il tipo a List<ReplyDTO>
 	private UUID postId;
 }

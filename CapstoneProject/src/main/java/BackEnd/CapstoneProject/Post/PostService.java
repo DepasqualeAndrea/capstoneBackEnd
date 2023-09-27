@@ -2,7 +2,6 @@ package BackEnd.CapstoneProject.Post;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -128,14 +127,14 @@ public class PostService {
 		}
 	}
 
-	@Transactional
-	private void deleteRepliesAndAssociations(Comment comment) {
-		List<Comment> replies = new ArrayList<>(comment.getReplies());
-		for (Comment reply : replies) {
-			deleteRepliesAndAssociations(reply);
-			commentRepo.delete(reply);
-		}
-	}
+//	@Transactional
+//	private void deleteRepliesAndAssociations(Comment comment) {
+//		List<Reply> replies = new ArrayList<>(comment.getReplies());
+//		for (Reply reply : replies) {
+//			deleteRepliesAndAssociations(reply);
+//			commentRepo.delete(reply);
+//		}
+//	}
 
 	@Transactional
 	public void deletePost(UUID postId) {
@@ -154,7 +153,7 @@ public class PostService {
 
 			for (Comment comment : comments) {
 				removeUserCommentAssociation(comment);
-				deleteRepliesAndAssociations(comment);
+				// deleteRepliesAndAssociations(comment);
 			}
 
 			postRepo.delete(post);
