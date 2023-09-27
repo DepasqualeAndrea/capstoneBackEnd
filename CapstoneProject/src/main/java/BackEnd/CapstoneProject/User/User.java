@@ -92,12 +92,10 @@ public class User implements UserDetails {
 	private List<Comment> comment = new ArrayList<>();
 
 	@ManyToMany
-	@JsonIgnore
 	@JoinTable(name = "user_follows", joinColumns = @JoinColumn(name = "follower_id"), inverseJoinColumns = @JoinColumn(name = "following_id"))
 	private Set<User> following = new HashSet<>();
 
 	@ManyToMany(mappedBy = "following")
-	@JsonIgnore
 	private Set<User> followers = new HashSet<>();
 
 	public User(String nome, String cognome, String username, String email, String password, Ruolo role,

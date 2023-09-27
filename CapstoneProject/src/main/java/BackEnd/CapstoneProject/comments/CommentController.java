@@ -23,9 +23,9 @@ public class CommentController {
 	@Autowired
 	CommentRepo commentRepo;
 
-	@PostMapping("/create")
-	public ResponseEntity<Comment> createComment(@RequestBody CommentPayload body) {
-		Comment comment = commentService.salvaCommento(body);
+	@PostMapping("/{postId}/create")
+	public ResponseEntity<Comment> createComment(@PathVariable UUID postId, @RequestBody CommentPayload body) {
+		Comment comment = commentService.salvaCommento(postId, body);
 		return new ResponseEntity<>(comment, HttpStatus.CREATED);
 	}
 

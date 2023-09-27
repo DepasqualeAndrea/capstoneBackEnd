@@ -43,9 +43,9 @@ public class CommentService {
 	}
 
 	@Transactional
-	public Comment salvaCommento(CommentPayload body) {
+	public Comment salvaCommento(UUID postId, CommentPayload body) {
 
-		Post post = ps.findById(body.getPostId());
+		Post post = ps.findById(postId);
 
 		User user = userService.getCurrentUser();
 
@@ -74,6 +74,7 @@ public class CommentService {
 		UUID userId = user.getUserId();
 
 		Comment reply = new Comment();
+		reply.setRepliesId(UUID.randomUUID());
 		reply.setPost(post);
 		reply.setContent(body.getContent());
 		reply.setDataCreazione(LocalDateTime.now());

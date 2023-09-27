@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -39,6 +40,7 @@ public class Comment {
 	@GeneratedValue
 	@PrimaryKeyJoinColumn
 	private UUID commentId;
+	private UUID repliesId;
 	private String content;
 	private LocalDateTime dataCreazione;
 	private UUID usercommentId;
@@ -57,6 +59,7 @@ public class Comment {
 	private Comment parentComment;
 
 	@OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+	@JsonAlias("replies")
 	private List<Comment> replies = new ArrayList<>();
 
 	public Comment(LocalDateTime dataCreazione, String content, UUID postId, UUID userId) {
