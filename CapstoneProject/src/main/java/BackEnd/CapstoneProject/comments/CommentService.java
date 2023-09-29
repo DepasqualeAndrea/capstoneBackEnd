@@ -2,7 +2,9 @@ package BackEnd.CapstoneProject.comments;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import BackEnd.CapstoneProject.Exception.NotFoundException;
+import BackEnd.CapstoneProject.Exception.PostNotFoundException;
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.Post.PostPayload;
 import BackEnd.CapstoneProject.Post.PostRepository;
@@ -75,13 +78,14 @@ public class CommentService {
 		for (Comment comment : comments) {
 			// Forza il caricamento delle risposte
 			comment.getReplies().size();
-
 			CommentDTO commentDTO = new CommentDTO();
 			commentDTO.setCommentId(comment.getCommentId());
 			commentDTO.setContent(comment.getContent());
 			commentDTO.setDataCreazione(comment.getDataCreazione());
 			commentDTO.setUsercommentId(comment.getUsercommentId());
 			commentDTO.setPostId(comment.getPost().getPostId());
+			commentDTO.setLikeCount(comment.getLikeCount());
+			commentDTO.setLikedCommentByUsers(comment.getLikedCommentByUsers());
 
 			// Aggiungi le risposte al commento DTO
 			List<ReplyDTO> replyDTOs = new ArrayList<>();
@@ -99,6 +103,37 @@ public class CommentService {
 		}
 
 		return filteredComments;
+	}
+
+	@Transactional
+	public void toggleLike(UUID commentId, UUID userId) {
+		Comment comment = commentRepo.findById(commentId)
+				.orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+		Set<UUID> likedByUsers = comment.getLikedCommentByUsers();
+		if (likedByUsers == null) {
+			likedByUsers = new HashSet<>();
+		}
+
+		if (likedByUsers.contains(userId)) {
+
+			likedByUsers.remove(userId);
+			comment.setLikeCount(comment.getLikeCount() - 1);
+		} else {
+
+			likedByUsers.add(userId);
+			comment.setLikeCount(comment.getLikeCount() + 1);
+		}
+
+		comment.setLikedCommentByUsers(likedByUsers);
+		commentRepo.save(comment);
+	}
+
+	public boolean isUserLikedcomment(UUID commentId, UUID userId) {
+		Comment comment = commentRepo.findById(commentId).orElse(null);
+
+		return comment != null && comment.getLikedCommentByUsers() != null
+				&& comment.getLikedCommentByUsers().contains(userId);
 	}
 
 	public Comment getCommentById(UUID commentId) {

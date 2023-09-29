@@ -127,15 +127,6 @@ public class PostService {
 		}
 	}
 
-//	@Transactional
-//	private void deleteRepliesAndAssociations(Comment comment) {
-//		List<Reply> replies = new ArrayList<>(comment.getReplies());
-//		for (Reply reply : replies) {
-//			deleteRepliesAndAssociations(reply);
-//			commentRepo.delete(reply);
-//		}
-//	}
-
 	@Transactional
 	public void deletePost(UUID postId) {
 		Post post = postRepo.findById(postId).orElse(null);
@@ -153,7 +144,6 @@ public class PostService {
 
 			for (Comment comment : comments) {
 				removeUserCommentAssociation(comment);
-				// deleteRepliesAndAssociations(comment);
 			}
 
 			postRepo.delete(post);

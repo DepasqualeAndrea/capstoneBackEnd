@@ -2,7 +2,9 @@ package BackEnd.CapstoneProject.comments;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -13,6 +15,8 @@ import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.reply.Reply;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -45,8 +49,15 @@ public class Comment {
 	private LocalDateTime dataCreazione;
 	private UUID usercommentId;
 
+	@Column(name = "liked_by_users")
+	@ElementCollection
+	private Set<UUID> likedCommentByUsers = new HashSet<>();
+
+	private Integer likeCount = 0;
+
 	@ManyToOne
 	@JoinColumn(name = "post_id")
+	@JsonIgnore
 	private Post post;
 
 	@ManyToOne

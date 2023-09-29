@@ -1,7 +1,9 @@
 package BackEnd.CapstoneProject.comments;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import BackEnd.CapstoneProject.reply.ReplyDTO;
@@ -19,4 +21,6 @@ public class CommentDTO {
 	private UUID usercommentId;
 	private List<ReplyDTO> replies; // Cambia il tipo a List<ReplyDTO>
 	private UUID postId;
+	private Set<UUID> likedCommentByUsers = new HashSet<>();
+	private Integer likeCount = 0;
 }

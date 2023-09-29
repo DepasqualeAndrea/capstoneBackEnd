@@ -2,7 +2,9 @@ package BackEnd.CapstoneProject.reply;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import BackEnd.CapstoneProject.Exception.NotFoundException;
+import BackEnd.CapstoneProject.Exception.PostNotFoundException;
 import BackEnd.CapstoneProject.Post.PostRepository;
 import BackEnd.CapstoneProject.Post.PostService;
 import BackEnd.CapstoneProject.User.User;
@@ -21,6 +24,7 @@ import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 import BackEnd.CapstoneProject.comments.Comment;
 import BackEnd.CapstoneProject.comments.CommentRepo;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ReplyService {
@@ -65,12 +69,44 @@ public class ReplyService {
 			replyDTO.setReplyId(reply.getRepliesId());
 			replyDTO.setContent(reply.getContent());
 			replyDTO.setDataCreazione(reply.getDataCreazione());
+			replyDTO.setLikeCount(reply.getLikeCount());
+			replyDTO.setLikedReplyByUsers(reply.getLikedReplyByUsers());
 			replyDTO.setUserReplyId(userService.getCurrentUser().getUserId());
 			replyDTO.setUsername(userService.getCurrentUser().getUsername());
+			replyDTO.setUserReplyImage(userService.getCurrentUser().getProfileImageUrl());
 			replyDTOs.add(replyDTO);
 		}
 
 		return replyDTOs;
+	}
+
+	@Transactional
+	public void toggleLike(UUID repliesId, UUID userId) {
+		Reply reply = replyRepo.findById(repliesId).orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+		Set<UUID> likedReplyByUsers = reply.getLikedReplyByUsers();
+		if (likedReplyByUsers == null) {
+			likedReplyByUsers = new HashSet<>();
+		}
+
+		if (likedReplyByUsers.contains(userId)) {
+
+			likedReplyByUsers.remove(userId);
+			reply.setLikeCount(reply.getLikeCount() - 1);
+		} else {
+
+			likedReplyByUsers.add(userId);
+			reply.setLikeCount(reply.getLikeCount() + 1);
+		}
+
+		reply.setLikedReplyByUsers(likedReplyByUsers);
+		replyRepo.save(reply);
+	}
+
+	public boolean isUserLikedReply(UUID repliesId, UUID userId) {
+		Reply reply = replyRepo.findById(repliesId).orElse(null);
+
+		return reply != null && reply.getLikedReplyByUsers() != null && reply.getLikedReplyByUsers().contains(userId);
 	}
 
 	public Reply getReplyById(UUID RepliesId) {
@@ -92,15 +128,15 @@ public class ReplyService {
 		return replyRepo.save(found);
 	}
 
-//	public void deleteCommentById(UUID commentId) {
-//
-//		if (replyRepo.existsById(commentId)) {
-//
-//			replyRepo.deleteById(commentId);
-//		} else {
-//
-//			throw new NotFoundException("Comment with ID " + commentId + " not found");
-//		}
-//	}
+	public void deleteReplyById(UUID commentId) {
+
+		if (replyRepo.existsById(commentId)) {
+
+			replyRepo.deleteById(commentId);
+		} else {
+
+			throw new NotFoundException("Comment with ID " + commentId + " not found");
+		}
+	}
 
 }

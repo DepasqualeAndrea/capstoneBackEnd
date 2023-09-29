@@ -93,6 +93,7 @@ public class User implements UserDetails {
 
 	@ManyToMany
 	@JoinTable(name = "user_follows", joinColumns = @JoinColumn(name = "follower_id"), inverseJoinColumns = @JoinColumn(name = "following_id"))
+	@JsonIgnore
 	private Set<User> following = new HashSet<>();
 
 	@ManyToMany(mappedBy = "following")

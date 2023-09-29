@@ -75,20 +75,20 @@ public class UserService {
 		User following = userRepository.findById(followingId)
 				.orElseThrow(() -> new UserNotFoundException("Following user not found"));
 
-		if (follower.getFollowing().contains(following)) {
-			follower.getFollowing().remove(following);
+		if (following.getFollowing().contains(follower)) {
+			following.getFollowing().remove(follower);
 		} else {
-			follower.getFollowing().add(following);
+			following.getFollowing().add(follower);
 		}
 
-		userRepository.save(follower);
+		userRepository.save(following);
 	}
 
 	public boolean isUserFollowing(UUID followerId, UUID followingId) {
-		User follower = userRepository.findById(followerId).orElse(null);
+		User follower = userRepository.findById(followingId).orElse(null);
 
 		return follower != null
-				&& follower.getFollowing().stream().anyMatch(user -> user.getUserId().equals(followingId));
+				&& follower.getFollowing().stream().anyMatch(user -> user.getUserId().equals(followerId));
 	}
 
 	@Transactional
