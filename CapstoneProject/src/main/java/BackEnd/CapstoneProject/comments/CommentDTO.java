@@ -19,7 +19,7 @@ public class CommentDTO {
 	private String content;
 	private LocalDateTime dataCreazione;
 	private UUID usercommentId;
-	private List<ReplyDTO> replies; // Cambia il tipo a List<ReplyDTO>
+	private List<ReplyDTO> replies;
 	private UUID postId;
 	private Set<UUID> likedCommentByUsers = new HashSet<>();
 	private Integer likeCount = 0;

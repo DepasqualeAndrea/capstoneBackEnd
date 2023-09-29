@@ -23,9 +23,4 @@ public class CloudinaryController {
 		return new ResponseEntity<>(data, HttpStatus.OK);
 	}
 
-//	@GetMapping("/list")
-//	public ResponseEntity<List<Image>> list() {
-//		List<Image> list = imagenService.list();
-//		return new ResponseEntity(list, HttpStatus.OK);
-//	}
 }

@@ -54,7 +54,6 @@ public class UserController {
 		if (currentUser != null) {
 			return currentUser.getFollowers();
 		} else {
-			// Restituisci una risposta appropriata se l'utente non è autenticato
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utente non autenticato");
 		}
 	}

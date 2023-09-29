@@ -16,6 +16,7 @@ public class CloudinaryService implements CloudinaryImageService {
 	@Autowired
 	private Cloudinary cloudinary;
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Map upload(MultipartFile file) {
 
@@ -31,7 +32,6 @@ public class CloudinaryService implements CloudinaryImageService {
 
 	public String uploadImageToCloudinary(MultipartFile imageFile) {
 		try {
-			// Carica l'immagine su Cloudinary e ottieni l'URL dell'immagine
 			Map<?, ?> uploadResult = cloudinary.uploader().upload(imageFile.getBytes(), ObjectUtils.emptyMap());
 			return uploadResult.get("url").toString();
 		} catch (IOException e) {

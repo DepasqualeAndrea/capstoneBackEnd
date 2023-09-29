@@ -11,6 +11,7 @@ import com.cloudinary.Cloudinary;
 @Configuration
 public class CloudConfig {
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public Cloudinary getCloudinary() {
 
@@ -22,12 +23,5 @@ public class CloudConfig {
 
 		return new Cloudinary(config);
 	}
-
-//	@Bean
-//	public Cloudinary getCloudinary() {
-//		Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "drjfwr7dc", "api_key",
-//				"498472658559532", "api_secret", "dovAb29svN3usgLWuzDDhxEOqyU", "secure", true));
-//		return cloudinary;
-//	}
 
 }

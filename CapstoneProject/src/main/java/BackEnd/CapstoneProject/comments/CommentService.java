@@ -19,7 +19,6 @@ import BackEnd.CapstoneProject.Exception.NotFoundException;
 import BackEnd.CapstoneProject.Exception.PostNotFoundException;
 import BackEnd.CapstoneProject.Post.Post;
 import BackEnd.CapstoneProject.Post.PostPayload;
-import BackEnd.CapstoneProject.Post.PostRepository;
 import BackEnd.CapstoneProject.Post.PostService;
 import BackEnd.CapstoneProject.User.User;
 import BackEnd.CapstoneProject.User.UserRepo;
@@ -31,16 +30,14 @@ import jakarta.transaction.Transactional;
 @Service
 @Lazy
 public class CommentService {
-	private final PostRepository postRepo;
+
 	private final UserService userService;
 	private final UserRepo userRepo;
 	private final CommentRepo commentRepo;
 	private final PostService ps;
 
 	@Autowired
-	public CommentService(PostRepository postRepo, UserService userService, UserRepo userRepo, @Lazy PostService ps,
-			CommentRepo commentRepo) {
-		this.postRepo = postRepo;
+	public CommentService(UserService userService, UserRepo userRepo, @Lazy PostService ps, CommentRepo commentRepo) {
 		this.userService = userService;
 		this.userRepo = userRepo;
 		this.commentRepo = commentRepo;
@@ -76,7 +73,6 @@ public class CommentService {
 		List<CommentDTO> filteredComments = new ArrayList<>();
 
 		for (Comment comment : comments) {
-			// Forza il caricamento delle risposte
 			comment.getReplies().size();
 			CommentDTO commentDTO = new CommentDTO();
 			commentDTO.setCommentId(comment.getCommentId());
@@ -87,7 +83,6 @@ public class CommentService {
 			commentDTO.setLikeCount(comment.getLikeCount());
 			commentDTO.setLikedCommentByUsers(comment.getLikedCommentByUsers());
 
-			// Aggiungi le risposte al commento DTO
 			List<ReplyDTO> replyDTOs = new ArrayList<>();
 			for (Reply reply : comment.getReplies()) {
 				ReplyDTO replyDTO = new ReplyDTO();

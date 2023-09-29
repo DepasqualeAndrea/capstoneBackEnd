@@ -7,5 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface CloudinaryImageService {
+	@SuppressWarnings("rawtypes")
 	public Map upload(MultipartFile file);
 }

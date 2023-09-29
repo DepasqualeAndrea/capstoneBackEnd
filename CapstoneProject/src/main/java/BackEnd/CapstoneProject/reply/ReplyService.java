@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import BackEnd.CapstoneProject.Exception.NotFoundException;
 import BackEnd.CapstoneProject.Exception.PostNotFoundException;
-import BackEnd.CapstoneProject.Post.PostRepository;
-import BackEnd.CapstoneProject.Post.PostService;
 import BackEnd.CapstoneProject.User.User;
-import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 import BackEnd.CapstoneProject.comments.Comment;
 import BackEnd.CapstoneProject.comments.CommentRepo;
@@ -28,21 +24,14 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class ReplyService {
-	private final PostRepository postRepo;
 	private final UserService userService;
-	private final UserRepo userRepo;
 	private final CommentRepo commentRepo;
-	private final PostService ps;
 	private final ReplyRepo replyRepo;
 
 	@Autowired
-	public ReplyService(ReplyRepo replyRepo, PostRepository postRepo, UserService userService, UserRepo userRepo,
-			@Lazy PostService ps, CommentRepo commentRepo) {
-		this.postRepo = postRepo;
+	public ReplyService(ReplyRepo replyRepo, UserService userService, CommentRepo commentRepo) {
 		this.userService = userService;
-		this.userRepo = userRepo;
 		this.commentRepo = commentRepo;
-		this.ps = ps;
 		this.replyRepo = replyRepo;
 	}
 

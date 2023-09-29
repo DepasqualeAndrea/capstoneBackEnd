@@ -23,7 +23,6 @@ import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 import BackEnd.CapstoneProject.comments.Comment;
 import BackEnd.CapstoneProject.comments.CommentRepo;
-import BackEnd.CapstoneProject.comments.CommentService;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -32,17 +31,15 @@ public class PostService {
 	private final UserService userService;
 	private final UserRepo userRepo;
 	private final CloudinaryService cloudinaryService;
-	private final CommentService commentService;
 	private final CommentRepo commentRepo;
 
 	@Autowired
-	public PostService(PostRepository postRepo, CloudinaryService cloudinaryService, CommentService commentService,
-			UserService userService, CommentRepo commentRepo, UserRepo userRepo) {
+	public PostService(PostRepository postRepo, CloudinaryService cloudinaryService, UserService userService,
+			CommentRepo commentRepo, UserRepo userRepo) {
 		this.postRepo = postRepo;
 		this.userService = userService;
 		this.userRepo = userRepo;
 		this.cloudinaryService = cloudinaryService;
-		this.commentService = commentService;
 		this.commentRepo = commentRepo;
 
 	}

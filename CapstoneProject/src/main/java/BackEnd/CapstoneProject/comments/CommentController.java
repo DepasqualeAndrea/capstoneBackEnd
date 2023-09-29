@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import BackEnd.CapstoneProject.Post.PostRepository;
 import BackEnd.CapstoneProject.User.User;
-import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 
 @RestController
@@ -30,13 +28,10 @@ public class CommentController {
 	CommentRepo commentRepo;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private PostRepository postRepo;
-	@Autowired
-	private UserRepo userRepo;
 
 	@GetMapping("/getAllComments/{postId}")
 	public List<CommentDTO> getCommentsByPostId(@PathVariable("postId") UUID postId) {
+		@SuppressWarnings("unused")
 		Sort sortByCreationDateDesc = Sort.by(Sort.Direction.DESC, "datacreazione");
 		List<CommentDTO> comments = commentService.getAllFilteredCommentsByPost(postId);
 		comments.sort((c1, c2) -> c2.getDataCreazione().compareTo(c1.getDataCreazione()));
@@ -51,6 +46,7 @@ public class CommentController {
 
 	@PostMapping("/{postId}/create")
 	public ResponseEntity<String> createComment(@PathVariable UUID postId, @RequestBody CommentPayload body) {
+		@SuppressWarnings("unused")
 		Comment comment = commentService.salvaCommento(postId, body);
 		String successMessage = "Commento creato con successo";
 		return ResponseEntity.status(HttpStatus.CREATED).body(successMessage);

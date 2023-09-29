@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import BackEnd.CapstoneProject.User.User;
-import BackEnd.CapstoneProject.User.UserRepo;
 import BackEnd.CapstoneProject.User.UserService;
 
 @CrossOrigin
@@ -36,8 +35,6 @@ public class PostController {
 	private UserService userService;
 	@Autowired
 	private PostRepository postRepo;
-	@Autowired
-	private UserRepo userRepo;
 
 	@GetMapping("/home")
 	public Page<Post> getPostsForHomePage() {
